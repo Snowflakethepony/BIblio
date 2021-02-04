@@ -12,7 +12,7 @@ namespace Biblio.Server.Interfaces
         IBookCopyRepository BookCopyRepository { get; }
         IBookRepository BookRepository { get; }
         ILibraryRepository LibraryRepository { get; }
-        IBorrowedBookHistoryRepository RentedBookHistoryRepository { get; }
+        IBorrowedBookHistoryRepository BorrowedBookHistoryRepository { get; }
         IAppUserRepository AppUserRepository { get; }
         IReservationRepository ReservationRepository { get; }
         /// <summary>
