@@ -1,6 +1,16 @@
 ﻿<h3>BookCopyListMarkup</h3>
 <p>MARKUP ID: @BookCopyList.FirstOrDefault().Id</p>
 
+<MatCard class="demo-mat-card">
+    <MatCardContent>
+        <div class="demo-mat-card-content">
+            <MatHeadline6 class="demo-mat-card-clean-margin">
+                MARKUP ID: @BookCopyList.FirstOrDefault().Id
+            </MatHeadline6>
+        </div>
+    </MatCardContent>
+</MatCard>
+
 @code {
     [Parameter]
     public List<Bog> BookCopyList { get; set; }
