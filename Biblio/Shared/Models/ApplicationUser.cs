@@ -24,5 +24,6 @@ namespace Biblio.Shared.Models
 
         public ICollection<BookCopy> BorrowedBooks { get; set; }
         public ICollection<BorrowedBookHistory> BorrowedBookHistories { get; set; }
+        public ICollection<Reservation> Reservations { get; set; }
     }
 }
