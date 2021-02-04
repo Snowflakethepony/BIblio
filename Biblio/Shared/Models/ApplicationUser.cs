@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Biblio.Server.Models
+using System.ComponentModel.DataAnnotations.Schema;
+namespace Biblio.Shared.Models
 {
     public class ApplicationUser : IdentityUser
     {

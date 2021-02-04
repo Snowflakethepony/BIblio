@@ -1,5 +1,5 @@
 using Biblio.Server.Data;
-using Biblio.Server.Models;
+using Biblio.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
