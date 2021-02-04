@@ -1,0 +1,16 @@
+﻿
+<Biblio.Client.Shared.Markup.BookCopyListMarkup BookCopyList="@((List<Bog>)inputObjectList)" />
+
+@code {
+
+    [Parameter]
+    public object inputObjectList { get; set; }
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(((List<Bog>)inputObjectList).FirstOrDefault().Id);
+    }
+}

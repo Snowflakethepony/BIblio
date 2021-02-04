@@ -4,4 +4,16 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<GenericBookList inputObjectList="@bookCopyList"></GenericBookList>
+
+@code {
+    private List<Bog> bookCopyList = new List<Bog>();
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        bookCopyList.Add(new Bog() { Id = 1 });
+    }
+} 
