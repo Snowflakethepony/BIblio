@@ -1,16 +1,53 @@
-﻿
-<Biblio.Client.Shared.Markup.BookCopyListMarkup BookCopyList="@((List<Bog>)inputObjectList)" />
+﻿@using Biblio.Shared.Models.DTOs
+
+@switch (BookType)
+{
+    case SharedProperties.BookTypes.Book:
+        break;
+    case SharedProperties.BookTypes.Copy:
+        <Biblio.Client.Shared.Markup.BookCopyListMarkup BookCopyList="@((List<Bog>)inputObjectList)" />
+        break;
+    default:
+        break;
+}
 
 @code {
 
     [Parameter]
     public object inputObjectList { get; set; }
 
-    /// <summary>
-    /// Component startup procedure.
-    /// </summary>
-    protected override async Task OnInitializedAsync()
+    [Parameter]
+    public SharedProperties.DisplayTypes DisplayType { get; set; }
+
+    [Parameter]
+    public SharedProperties.BookTypes BookType { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnDetailClick { get; set; }
+
+    public void SelectionChangedEvent(object row)
     {
-        Console.WriteLine(((List<Bog>)inputObjectList).FirstOrDefault().Id);
+        if (row == null)
+        {
+            // Do nothing on empty row.
+            return;
+        }
+        else
+        {
+            switch (BookType)
+            {
+                case SharedProperties.BookTypes.Book:
+                    var book = row as BookDTO;
+                    OnDetailClick.InvokeAsync(book);
+                    break;
+                case SharedProperties.BookTypes.Copy:
+                    var bookCopy = row as BookCopyDTO;
+                    OnDetailClick.InvokeAsync(bookCopy);
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }
