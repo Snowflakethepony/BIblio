@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Biblio.Shared.Models.DTOs
 {
-    public class ApplicationsUserDTO
+    public class ApplicationUserDTO
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }
