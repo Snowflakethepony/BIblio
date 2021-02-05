@@ -1,8 +1,8 @@
 ﻿@using Biblio.Shared.Models.DTOs
 
-@if (bookCopies == null)
+@if (books == null)
 {
-    <p><em>Book copies not found.</em></p>
+    <p><em>Books not found.</em></p>
 }
 else
 {
@@ -10,30 +10,29 @@ else
     {
         case SharedProperties.DisplayTypes.Card:
             <div class="row">
-                @foreach (var bookCopy in bookCopies)
+                @foreach (var book in books)
                 {
 
 
                     <div class="col-md-4" style="margin-bottom:20px;">
                         <MatCard class="demo-mat-card">
                             <MatCardContent>
-                                <MatCardMedia Wide="true" ImageUrl="@GetImageUrl(bookCopy.Book)" ></MatCardMedia>
+                                <MatCardMedia Wide="true" ImageUrl="@GetImageUrl(book)"></MatCardMedia>
                                 <div class="demo-mat-card-content">
                                     <MatHeadline6 class="demo-mat-card-clean-margin">
-                                        @bookCopy.Book.Title
+                                        @book.Title
                                     </MatHeadline6>
                                     <MatSubtitle2 class="demo-mat-card-clean-margin">
-                                        Library: @bookCopy.OriginLibrary.Name
-                                        Available: @bookCopy.IsAvailable
+                                        Published: @book.PublishedDate
                                     </MatSubtitle2>
                                 </div>
 
                                 <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-                                    @bookCopy.Book.Blurb.Substring(0, bookCopy.Book.Blurb.IndexOf('.'))
+                                    @book.Blurb.Substring(0, book.Blurb.IndexOf('.'))
                                 </MatBody2>
                             </MatCardContent>
                             <MatCardActions>
-                                <MatButton Icon="@MatIconNames.Description" OnClick="@(() => OnDetailClick.InvokeAsync(bookCopy))" Label="Details"></MatButton>
+                                <MatButton Icon="@MatIconNames.Description" OnClick="@(() => OnDetailClick.InvokeAsync(book))" Label="Details"></MatButton>
                             </MatCardActions>
                         </MatCard>
                     </div>
@@ -42,27 +41,25 @@ else
             break;
         case SharedProperties.DisplayTypes.List:
             <ul>
-                @foreach (var bookCopy in bookCopies)
+                @foreach (var book in books)
                 {
-                    <li>@bookCopy.Book.Title</li>
+                    <li>@book.Title</li>
                 }
             </ul>
             break;
         case SharedProperties.DisplayTypes.Table:
-            <MatTable Items="bookCopies" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+            <MatTable Items="books" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
                 <MatTableHeader>
                     <th>Title</th>
                     <th>Author</th>
-                    <th>Library</th>
-                    <th>Available</th>
+                    <th>Published</th>
                     <th>Blurb</th>
                 </MatTableHeader>
                 <MatTableRow>
-                    <td>@context.Book.Title</td>
-                    <td>@context.Book.Authors.FirstOrDefault()</td>
-                    <td>@context.OriginLibrary.Name</td>
-                    <td>@context.IsAvailable</td>
-                    <td>@context.Book.Blurb</td>
+                    <td>@context.Title</td>
+                    <td>@context.Authors.FirstOrDefault()</td>
+                    <td>@context.PublishedDate</td>
+                    <td>@context.Blurb</td>
                 </MatTableRow>
             </MatTable>
             break;
@@ -74,7 +71,7 @@ else
 
 @code {
     [Parameter]
-    public List<BookCopyDTO> bookCopies { get; set; }
+    public List<BookDTO> books { get; set; }
 
     [Parameter]
     public SharedProperties.DisplayTypes DisplayType { get; set; }
@@ -92,7 +89,7 @@ else
             return SharedProperties.BaseBookCoverUrl;
         }
         else
-        { 
+        {
             return string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bookDTO.Image));
         }
     }

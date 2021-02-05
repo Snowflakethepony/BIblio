@@ -3,6 +3,7 @@
 @switch (BookType)
 {
     case SharedProperties.BookTypes.Book:
+        <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookDTO>)inputObjectList)" />
         break;
     case SharedProperties.BookTypes.Copy:
         <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" />

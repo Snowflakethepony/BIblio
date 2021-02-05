@@ -7,6 +7,8 @@ namespace Biblio.Client.Shared
 {
     public static class SharedProperties
     {
+        public static string BaseBookCoverUrl = "/Media/Images/BaseBookImg.png";
+
         public enum BookTypes
         {
             Book,

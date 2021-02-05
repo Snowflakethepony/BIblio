@@ -1,0 +1,238 @@
+﻿@using Biblio.Shared.Models.DTOs
+@using Biblio.Shared.Models
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http
+@inject HttpClient Http
+@inject IHttpClientFactory ClientFactory
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+@if (isEditingListing)
+{
+    @*<GenericListingEdit inputObject="@inputObject" movieType="@movieType" username="@username" OnsubmitClick="@OnEditBackHandler" />*@
+}
+else
+{
+    <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnbackClick.InvokeAsync(null))" Label="Back"></MatButton>
+
+    <div class="movieDetail">
+        @switch (bookType)
+        {
+            case SharedProperties.BookTypes.Book:
+                break;
+            case SharedProperties.BookTypes.Copy:
+                break;
+            default:
+                break;
+        }
+        <hr />
+        <div class="movie-actions">
+            <AuthorizeView>
+                @*TODO: Should make this into a variable that is set doing startup of the component based on input object. *@
+                @if (bookType != SharedProperties.BookTypes.Copy)
+                {
+                    <MatButton Disabled="@bookCopy.IsAvailable" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                }
+            </AuthorizeView>
+            <AuthorizeView Roles="SiteAdministrator, LibraryAdmin">
+                <MatButton Raised="true" OnClick="@EditListingHandler">Edit listing</MatButton>
+            </AuthorizeView>
+        </div>
+
+        <br />
+        <hr />
+        <br />
+        <div>
+            <MatDialog @bind-IsOpen="@dialogIsOpen">
+                <MatDialogTitle>@title</MatDialogTitle>
+                <MatDialogContent>
+                    <p>@message</p>
+
+                </MatDialogContent>
+                <MatDialogActions>
+                    <MatButton OnClick="@HideDialog">OK</MatButton>
+                </MatDialogActions>
+            </MatDialog>
+        </div>
+    </div>
+}
+
+
+@code {
+    //[Parameter]
+    //public int movieId { get; set; }
+
+    [Parameter]
+    public SharedProperties.BookTypes bookType { get; set; }
+
+    [Parameter]
+    public EventCallback OnbackClick { get; set; }
+
+    [Parameter]
+    public object inputObject { get; set; }
+
+    private object editObject;
+
+    private string username;
+    private bool dialogIsOpen = false;
+    private string title;
+    private string message;
+    private bool isEditingListing = false;
+    private HttpClient unauthClient;
+    private bool isReservedByUser;
+    private BookCopyDTO bookCopy = null;
+
+    public string ReserveBookHandlerBtnText
+    {
+        get
+        {
+            return isReservedByUser ? "Delete Reservation" : "Reserve Book";
+        }
+    }
+
+
+    /// <summary>
+    /// Types that define the Dialog type to show a user.
+    /// Messages will be based on this type.
+    /// </summary>
+    private enum DialogTypes
+    {
+        Reserved,
+        Edit
+    }
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Set username.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        username = authState.User.Identity.Name;
+
+        switch (bookType)
+        {
+            case SharedProperties.BookTypes.Book:
+
+                break;
+            case SharedProperties.BookTypes.Copy:
+                bookCopy = (BookCopyDTO)inputObject;
+                isReservedByUser = await Http.GetFromJsonAsync<bool>($"api/Reservations/IsBookCopyReservedByUser?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Handler for follow movie button.
+    /// </summary>
+    private async void ReserveBookHandler(MouseEventArgs e)
+    {
+        HttpResponseMessage response;
+
+        if (isReservedByUser)
+        {
+            response = await Http.DeleteAsync($"api/Reservations/DeleteReservation?userName={ username }&bookCopyId={ bookCopy.BookCopyId }");
+        }
+        else
+        {
+            response = await Http.PostAsync($"api/Reservations/PostReservation?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            isReservedByUser = !isReservedByUser;
+        }
+
+        HandleDialog(response.IsSuccessStatusCode, DialogTypes.Reserved);
+    }
+
+    /// <summary>
+    /// Handler for the dialog.
+    /// </summary>
+    /// <param name="isSuccess">State of HTTP response.</param>
+    /// <param name="type">Dialog type to open.</param>
+    private void HandleDialog(bool isSuccess, DialogTypes type)
+    {
+        if (isSuccess)
+        {
+            ShowDialog(type, true);
+        }
+        else
+        {
+            ShowDialog(type, false);
+        }
+    }
+
+    /// <summary>
+    /// Show Dialog with messages based on type.
+    /// </summary>
+    /// <param name="type">Dialog type to open.</param>
+    /// <param name="isSuccess">State of HTTP response.</param>
+    private void ShowDialog(DialogTypes type, bool isSuccess)
+    {
+        // Set "generic" title
+        title = isSuccess ? type.ToString() + " - Successful" : type.ToString() + " - Failed";
+
+        switch (type)
+        {
+            case DialogTypes.Reserved:
+                message = isSuccess ? "Reservation made succesfully" : "Failed to reserve the book. Please try again later.";
+                break;
+            case DialogTypes.Edit:
+                message = isSuccess ? "Successfully updated listing" : "Failed to update listing. Please try again later.";
+                break;
+            default:
+                break;
+        }
+
+        dialogIsOpen = true;
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Handler to hide the dialog.
+    /// </summary>
+    private void HideDialog()
+    {
+        dialogIsOpen = false;
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Calls StateHasChanged to inform Blazor to rerender.
+    /// </summary>
+    private void UpdateUI()
+    {
+        base.StateHasChanged();
+    }
+
+    private void OnEditBackHandler(bool? isSuccess)
+    {
+        if (null != isSuccess)
+        {
+            if (isSuccess == true)
+            {
+                HandleDialog(true, DialogTypes.Edit);
+            }
+            else
+            {
+                HandleDialog(false, DialogTypes.Edit);
+            }
+        }
+
+        // Reset is reviewing to show the list again.
+        isEditingListing = false;
+
+        UpdateUI();
+    }
+
+    private void EditListingHandler()
+    {
+        isEditingListing = true;
+
+        UpdateUI();
+    }
+}

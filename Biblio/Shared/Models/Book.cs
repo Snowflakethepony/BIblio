@@ -41,7 +41,7 @@ namespace Biblio.Shared.Models
         public short? Width { get; set; }
         public short? Weight { get; set; }
         public short NumberofPages { get; set; }
-        public byte[]? Image { get; set; }
+        public byte[] Image { get; set; }
         public BookFormats Format { get; set; }
         public BookTypes Type { get; set; }
 
