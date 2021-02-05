@@ -1,5 +1,7 @@
 using AutoMapper;
 using Biblio.Server.Data;
+using Biblio.Server.Interfaces;
+using Biblio.Server.Repositories;
 using Biblio.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -79,6 +81,7 @@ namespace Biblio.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddTransient<IRepositoryWrapper, RepositoryWrapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
