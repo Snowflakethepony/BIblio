@@ -10,6 +10,7 @@ namespace Biblio.Shared.Models.DTOs
     {
         public int BookCopyId { get; set; }
         public bool IsAvailable { get; set; }
+        public int ShelfNumber { get; set; }
         public DateTime? RentedAt { get; set; }
         public DateTime? ReturnBy { get; set; }
         public int? TimesRerented { get; set; }

@@ -32,7 +32,7 @@ namespace Biblio.Shared.Models.DTOs
         public short? Height { get; set; }
         public short? Depth { get; set; }
         public short? Width { get; set; }
-        public int? Weight { get; set; }
+        public short? Weight { get; set; }
         public int NumberofPages { get; set; }
         public byte[] Image { get; set; }
         public BookFormats Format { get; set; }

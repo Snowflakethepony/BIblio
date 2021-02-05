@@ -1,0 +1,29 @@
+﻿@inject HttpClient Http
+
+<h3>Edit book copy listing - @bookCopy.BookCopyId</h3>
+
+<MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnsubmitClick.InvokeAsync(null))" Label="Back"></MatButton>
+
+<div>
+    <p>
+        IsAvailable
+        <MatSlideToggle @bind-Value="@bookCopy.IsAvailable"></MatSlideToggle>
+    </p>
+    <p>
+        <MatTextField @bind-Value="@bookCopy.ShelfNumber" TValue="int" Label="Shelf Number" Required="true" />
+    </p>
+    <p>
+        <MatButton OnClick="@(() => OnsubmitClick.InvokeAsync(bookCopy))" Raised="true">Submit Changes</MatButton>
+    </p>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<object> OnsubmitClick { get; set; }
+
+    [Parameter]
+    public string username { get; set; }
+
+    [Parameter]
+    public BookCopyDTO bookCopy { get; set; }
+}

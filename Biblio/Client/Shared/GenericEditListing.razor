@@ -1,0 +1,45 @@
+﻿@using Biblio.Shared.Models.DTOs
+@using Biblio.Shared.Models
+@using Biblio.Client.Shared.Markup
+@inject HttpClient Http
+
+@switch (bookType)
+{
+    case SharedProperties.BookTypes.Book:
+        break;
+    case SharedProperties.BookTypes.Copy:
+        break;
+}
+
+@code {
+    [Parameter]
+    public object inputObject { get; set; }
+
+    [Parameter]
+    public SharedProperties.BookTypes bookType { get; set; }
+
+    [Parameter]
+    public EventCallback<bool?> OnsubmitHandled { get; set; }
+
+    [Parameter]
+    public string username { get; set; }
+
+    private async void SubmitChangesHandler(object changedListing)
+    {
+        HttpResponseMessage response = new HttpResponseMessage();
+
+        switch (bookType)
+        {
+            case SharedProperties.BookTypes.Book:
+                response = await Http.PutAsJsonAsync<BookDTO>($"api/Books/PutBookFromDto", (BookDTO)changedListing);
+                break;
+            case SharedProperties.BookTypes.Copy:
+                response = await Http.PutAsJsonAsync<BookCopyDTO>($"api/BookCopies/PutBookCopyFromDto", (BookCopyDTO)changedListing);
+                break;
+            default:
+                break;
+        }
+
+        OnsubmitHandled.InvokeAsync(response.IsSuccessStatusCode);
+    }
+}

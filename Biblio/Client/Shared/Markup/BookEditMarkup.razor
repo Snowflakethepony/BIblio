@@ -1,0 +1,85 @@
+﻿@using System.IO 
+@inject HttpClient Http
+
+<h3>Edit book listing - @book.BookId</h3>
+
+<MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnsubmitClick.InvokeAsync(null))" Label="Back"></MatButton>
+
+<div>
+    <p>
+        <MatTextField @bind-Value="@book.Title" TValue="string" Label="Title" Required="true" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.Blurb" TValue="string" Label="Blurb" Required="true" />
+    </p>
+    <p>
+        Published date
+        <MatDatePicker @bind-Value="@book.PublishedDate" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.Height" TValue="short?" Label="Height" Required="false" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.Depth" TValue="short?" Label="Depth" Required="false" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.Width" TValue="short?" Label="Width" Required="false" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.Weight" TValue="short?" Label="Weight" Required="false" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@book.NumberofPages" TValue="int" Label="Number of pages" Required="true" />
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@book.Format" Items="@formatItems"></MatSelectItem>
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@book.Type" Items="@typeItems"></MatSelectItem>
+    </p>
+    <p>
+        <MatFileUpload OnChange="@FilesReady" Label="Drop an image file here or Browse"></MatFileUpload>
+    </p>
+
+    <p>
+        <MatButton OnClick="@(() => OnsubmitClick.InvokeAsync(book))" Raised="true">Submit Changes</MatButton>
+    </p>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<object> OnsubmitClick { get; set; }
+
+    [Parameter]
+    public string username { get; set; }
+
+    [Parameter]
+    public BookDTO book { get; set; }
+
+    private Book.BookFormats[] formatItems = Enum.GetValues(typeof(Book.BookFormats)).Cast<Book.BookFormats>().ToArray();
+    private Book.BookTypes[] typeItems = Enum.GetValues(typeof(Book.BookTypes)).Cast<Book.BookTypes>().ToArray();
+
+    private async Task FilesReady(IMatFileUploadEntry[] files)
+    {
+        try
+        {
+            var file = files.FirstOrDefault();
+
+            if (file != null)
+            {
+                return;
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await file.WriteToStreamAsync(ms);
+
+                book.Image = ms.ToArray();
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+}
