@@ -5,7 +5,7 @@
     case SharedProperties.BookTypes.Book:
         break;
     case SharedProperties.BookTypes.Copy:
-        <Biblio.Client.Shared.Markup.BookCopyListMarkup BookCopyList="@((List<Bog>)inputObjectList)" />
+        <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" />
         break;
     default:
         break;

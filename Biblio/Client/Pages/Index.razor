@@ -1,19 +1,28 @@
 ﻿@page "/"
+@inject HttpClient Http
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
 
-<GenericBookList inputObjectList="@bookCopyList"></GenericBookList>
+<GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" inputObjectList="@bookCopyList" OnDetailClick="@noting"></GenericBookList>
 
 @code {
-    private List<Bog> bookCopyList = new List<Bog>();
+    private List<BookCopyDTO> bookCopyList = new List<BookCopyDTO>();
 
     /// <summary>
     /// Component startup procedure.
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        bookCopyList.Add(new Bog() { Id = 1 });
+        Console.WriteLine("INDEX");
+        bookCopyList = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesByBookId?bookId={ 1 }");
+        Console.WriteLine(bookCopyList);
+
+    }
+
+    public void noting()
+    {
+
     }
 } 

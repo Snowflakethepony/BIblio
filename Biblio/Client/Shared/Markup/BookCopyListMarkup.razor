@@ -1,17 +1,87 @@
-﻿<h3>BookCopyListMarkup</h3>
-<p>MARKUP ID: @BookCopyList.FirstOrDefault().Id</p>
+﻿@using Biblio.Shared.Models.DTOs
 
-<MatCard class="demo-mat-card">
-    <MatCardContent>
-        <div class="demo-mat-card-content">
-            <MatHeadline6 class="demo-mat-card-clean-margin">
-                MARKUP ID: @BookCopyList.FirstOrDefault().Id
-            </MatHeadline6>
-        </div>
-    </MatCardContent>
-</MatCard>
+@if (bookCopies == null)
+{
+    <p><em>Movies not found.</em></p>
+}
+else
+{
+    switch (DisplayType)
+    {
+        case SharedProperties.DisplayTypes.Card:
+            <div class="row">
+                @foreach (var bookCopy in bookCopies)
+                {
+
+
+                    <div class="col-md-4" style="margin-bottom:20px;">
+                        <MatCard class="demo-mat-card">
+                            <MatCardContent>
+                    @*<MatCardMedia Wide="true" ImageUrl="@(string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bookCopy.Book.Image)))" ></MatCardMedia>*@
+                    <div class="demo-mat-card-content">
+                                    <MatHeadline6 class="demo-mat-card-clean-margin">
+                                        @bookCopy.Book.Title
+                                    </MatHeadline6>
+                                    <MatSubtitle2 class="demo-mat-card-clean-margin">
+                                        Library: @bookCopy.OriginLibrary.Name
+                                        Available: @bookCopy.IsAvailable
+                                    </MatSubtitle2>
+                                </div>
+
+                                <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
+                                    @bookCopy.Book.Blurb
+                                </MatBody2>
+                            </MatCardContent>
+                            <MatCardActions>
+                                <MatButton Icon="@MatIconNames.Description" OnClick="@(() => OnDetailClick.InvokeAsync(bookCopy))" Label="Details"></MatButton>
+                            </MatCardActions>
+                        </MatCard>
+                    </div>
+                }
+            </div>
+            break;
+        case SharedProperties.DisplayTypes.List:
+            <ul>
+                @foreach (var bookCopy in bookCopies)
+                {
+                    <li>@bookCopy.Book.Title</li>
+                }
+            </ul>
+            break;
+        case SharedProperties.DisplayTypes.Table:
+            <MatTable Items="bookCopies" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+                <MatTableHeader>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Library</th>
+                    <th>Available</th>
+                    <th>Blurb</th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>@context.Book.Title</td>
+                    <td>@context.Book.Authors.FirstOrDefault()</td>
+                    <td>@context.OriginLibrary.Name</td>
+                    <td>@context.IsAvailable</td>
+                    <td>@context.Book.Blurb</td>
+                </MatTableRow>
+            </MatTable>
+            break;
+        default:
+            <h1>PLEASE SPECIFY DISPLAYTYPE!</h1>
+            break;
+    }
+}
 
 @code {
     [Parameter]
-    public List<Bog> BookCopyList { get; set; }
+    public List<BookCopyDTO> bookCopies { get; set; }
+
+    [Parameter]
+    public SharedProperties.DisplayTypes DisplayType { get; set; }
+
+    [Parameter]
+    public EventCallback<object> OnDetailClick { get; set; }
+
+    [Parameter]
+    public Action<object> SelectionChangedEvent { get; set; }
 }
