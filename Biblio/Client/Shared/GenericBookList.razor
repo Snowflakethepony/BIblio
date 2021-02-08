@@ -1,12 +1,35 @@
 ﻿@using Biblio.Shared.Models.DTOs
 
-@switch (BookType)
+@switch (ViewState)
 {
-    case SharedProperties.BookTypes.Book:
-        <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookDTO>)inputObjectList)" />
+    case SharedProperties.ViewState.ShowDetails:
+        @switch (BookType)
+        {
+            case SharedProperties.BookTypes.Book:
+                <GenericBookDetails OnbackClick="@OnDetailBackHandler" bookType="@BookType" inputObject="@((BookDTO)detailsObject)" />
+                break;
+            case SharedProperties.BookTypes.Copy:
+                <GenericBookDetails OnbackClick="@OnDetailBackHandler" bookType="@BookType" inputObject="@((BookDTO)detailsObject)" />
+                break;
+            default:
+                break;
+        }
+
         break;
-    case SharedProperties.BookTypes.Copy:
-        <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" />
+    case SharedProperties.ViewState.ShowList:
+        @switch (BookType)
+        {
+            case SharedProperties.BookTypes.Book:
+                <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookDTO>)inputObjectList)" />
+                break;
+            case SharedProperties.BookTypes.Copy:
+                <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" />
+                break;
+            default:
+                break;
+        }
+        break;
+    case SharedProperties.ViewState.Editing:
         break;
     default:
         break;
@@ -25,6 +48,24 @@
 
     [Parameter]
     public EventCallback<object> OnDetailClick { get; set; }
+
+    [Parameter]
+    public SharedProperties.ViewState ViewState { get; set; } = SharedProperties.ViewState.ShowDetails;
+
+    private object detailsObject;
+
+    private void OnDetailClick2(object o)
+    {
+        detailsObject = o;
+        ViewState = SharedProperties.ViewState.ShowDetails;
+        UIUpdated();
+    }
+
+    private void OnDetailBackHandler()
+    {
+        ViewState = SharedProperties.ViewState.ShowList;
+        UIUpdated();
+    }
 
     public void SelectionChangedEvent(object row)
     {
@@ -50,5 +91,10 @@
             }
         }
 
+    }
+
+    private void UIUpdated()
+    {
+        base.StateHasChanged();
     }
 }

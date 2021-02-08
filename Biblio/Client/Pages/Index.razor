@@ -5,7 +5,7 @@
 
 Welcome to your new app.
 
-<GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" inputObjectList="@bookCopyList" OnDetailClick="@noting"></GenericBookList>
+<GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" ViewState="SharedProperties.ViewState.ShowList" inputObjectList="@bookCopyList" OnDetailClick="@noting"></GenericBookList>
 
 @code {
     private List<BookCopyDTO> bookCopyList = new List<BookCopyDTO>();

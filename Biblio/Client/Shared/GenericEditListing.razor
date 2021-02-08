@@ -6,8 +6,10 @@
 @switch (bookType)
 {
     case SharedProperties.BookTypes.Book:
+        <BookEditMarkup OnsubmitClick="@SubmitChangesHandler" username="@username" book="@((BookDTO)inputObject)"  />
         break;
     case SharedProperties.BookTypes.Copy:
+        <BookCopyEditMarkup OnsubmitClick="@SubmitChangesHandler" username="@username" bookCopy="@((BookCopyDTO)inputObject)" />
         break;
 }
 

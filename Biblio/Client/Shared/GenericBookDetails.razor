@@ -10,7 +10,17 @@
 
 @if (isEditingListing)
 {
-    @*<GenericListingEdit inputObject="@inputObject" movieType="@movieType" username="@username" OnsubmitClick="@OnEditBackHandler" />*@
+    switch (bookType)
+    {
+        case SharedProperties.BookTypes.Book:
+            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHanldled" username="@username" inputObject="@((BookDTO)inputObject)" />
+            break;
+        case SharedProperties.BookTypes.Copy:
+            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHanldled" username="@username" inputObject="@((BookCopyDTO)inputObject)" />
+            break;
+        default:
+            break;
+    }
 }
 else
 {
@@ -73,24 +83,21 @@ else
     public object inputObject { get; set; }
 
     private object editObject;
-
     private string username;
     private bool dialogIsOpen = false;
-    private string title;
-    private string message;
+    private string title;   // Title of the dialog
+    private string message; // Message of the dialog
     private bool isEditingListing = false;
-    private HttpClient unauthClient;
     private bool isReservedByUser;
     private BookCopyDTO bookCopy = null;
 
-    public string ReserveBookHandlerBtnText
+    private string ReserveBookHandlerBtnText
     {
         get
         {
             return isReservedByUser ? "Delete Reservation" : "Reserve Book";
         }
     }
-
 
     /// <summary>
     /// Types that define the Dialog type to show a user.
@@ -209,7 +216,7 @@ else
         base.StateHasChanged();
     }
 
-    private void OnEditBackHandler(bool? isSuccess)
+    private void OnEditHanldled(bool? isSuccess)
     {
         if (null != isSuccess)
         {

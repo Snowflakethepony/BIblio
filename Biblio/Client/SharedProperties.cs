@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Biblio.Client.Shared
+namespace Biblio.Client
 {
     public static class SharedProperties
     {
@@ -20,6 +20,13 @@ namespace Biblio.Client.Shared
             Card,
             List,
             Table
+        }
+
+        public enum ViewState
+        {
+            ShowDetails,
+            ShowList,
+            Editing
         }
     }
 }
