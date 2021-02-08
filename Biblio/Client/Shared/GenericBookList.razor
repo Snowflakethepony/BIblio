@@ -9,7 +9,7 @@
                 <GenericBookDetails OnbackClick="@OnDetailBackHandler" bookType="@BookType" inputObject="@((BookDTO)detailsObject)" />
                 break;
             case SharedProperties.BookTypes.Copy:
-                <GenericBookDetails OnbackClick="@OnDetailBackHandler" bookType="@BookType" inputObject="@((BookDTO)detailsObject)" />
+                <GenericBookDetails OnbackClick="@OnDetailBackHandler" bookType="@BookType" inputObject="@((BookCopyDTO)detailsObject)" />
                 break;
             default:
                 break;

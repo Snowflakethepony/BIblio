@@ -3,6 +3,7 @@ using Biblio.Server.Interfaces;
 using Biblio.Shared.Models;
 using Biblio.Shared.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,11 +19,13 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _usermanager;
 
-        public ReservationsController(IRepositoryWrapper wrapper, IMapper mapper)
+        public ReservationsController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;
+            this._usermanager = userManager;
         }
 
         [HttpGet]
@@ -47,6 +50,14 @@ namespace Biblio.Server.Controllers
         public async Task<ActionResult<ReservationDTO>> GetReservationById(int id)
         {
             return Ok(_mapper.Map<ReservationDTO>(await _wrapper.ReservationRepository.GetReservationById(id)));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<bool>> IsBookCopyReservedByUser(string username, int bookCopyId)
+        {
+            var user = await _usermanager.FindByNameAsync(username);
+
+            return Ok(_wrapper.ReservationRepository.DoesReservationExistForUserByBookCopyId(user.Id, bookCopyId));
         }
 
         [HttpPost]

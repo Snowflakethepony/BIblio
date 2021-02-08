@@ -29,6 +29,11 @@ namespace Biblio.Server.Repositories
             return await FindByCondition(r => r.LibraryId == libraryId).Include(r => r.ReservedCopy).Include(r => r.ReservedBy).ToListAsync();
         }
 
+        public async Task<bool> DoesReservationExistForUserByBookCopyId(string userId, int bookCopyId)
+        {
+            return await FindByCondition(r => r.ReservedCopyId == bookCopyId && r.ReservedById == userId).AnyAsync();
+        }
+
         public async Task<IEnumerable<Reservation>> GetAllReservationsByUser(string userId)
         {
             return await FindByCondition(r => r.ReservedById == userId).Include(r => r.ReservedCopy).ToListAsync();
