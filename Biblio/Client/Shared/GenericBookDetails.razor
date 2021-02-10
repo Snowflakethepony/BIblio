@@ -13,10 +13,10 @@
     switch (bookType)
     {
         case SharedProperties.BookTypes.Book:
-            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHanldled" username="@username" inputObject="@((BookDTO)inputObject)" />
+            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHandled" username="@username" inputObject="@((BookDTO)inputObject)" />
             break;
         case SharedProperties.BookTypes.Copy:
-            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHanldled" username="@username" inputObject="@((BookCopyDTO)inputObject)" />
+            <GenericEditListing bookType="@bookType" OnsubmitHandled="@OnEditHandled" username="@username" inputObject="@((BookCopyDTO)inputObject)" />
             break;
         default:
             break;
@@ -30,8 +30,10 @@ else
         @switch (bookType)
         {
             case SharedProperties.BookTypes.Book:
+                <Biblio.Client.Shared.Markup.BookDetailsMarkup book="@((BookDTO)inputObject)" />
                 break;
             case SharedProperties.BookTypes.Copy:
+                <Biblio.Client.Shared.Markup.BookCopyDetailsMarkup bookCopy="@((BookCopyDTO)inputObject)" />
                 break;
             default:
                 break;
@@ -40,9 +42,9 @@ else
         <div class="movie-actions">
             <AuthorizeView>
                 @*TODO: Should make this into a variable that is set doing startup of the component based on input object. *@
-                @if (bookType != SharedProperties.BookTypes.Copy)
+                @if (bookType == SharedProperties.BookTypes.Copy)
                 {
-                    <MatButton Disabled="@bookCopy.IsAvailable" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                    <MatButton Disabled="@(!bookCopy.IsAvailable)" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
                 }
             </AuthorizeView>
             <AuthorizeView Roles="SiteAdministrator, LibraryAdmin">
@@ -82,7 +84,6 @@ else
     [Parameter]
     public object inputObject { get; set; }
 
-    private object editObject;
     private string username;
     private bool dialogIsOpen = false;
     private string title;   // Title of the dialog
@@ -141,11 +142,11 @@ else
 
         if (isReservedByUser)
         {
-            response = await Http.DeleteAsync($"api/Reservations/DeleteReservation?userName={ username }&bookCopyId={ bookCopy.BookCopyId }");
+            response = await Http.DeleteAsync($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
         }
         else
         {
-            response = await Http.PostAsync($"api/Reservations/PostReservation?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
+            response = await Http.PostAsJsonAsync<BookCopyDTO>($"api/Reservations/CreateReservationFromDto?username={ username }", bookCopy);
         }
 
         if (response.IsSuccessStatusCode)
@@ -216,7 +217,7 @@ else
         base.StateHasChanged();
     }
 
-    private void OnEditHanldled(bool? isSuccess)
+    private void OnEditHandled(bool? isSuccess)
     {
         if (null != isSuccess)
         {

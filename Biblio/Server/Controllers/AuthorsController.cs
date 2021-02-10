@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Biblio.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AuthorsController : ControllerBase
     {

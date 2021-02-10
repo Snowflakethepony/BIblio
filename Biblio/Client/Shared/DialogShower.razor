@@ -1,0 +1,88 @@
+﻿<div>
+    <MatDialog @bind-IsOpen="@dialogIsOpen">
+        <MatDialogTitle>@title</MatDialogTitle>
+        <MatDialogContent>
+            <p>@message</p>
+
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton OnClick="@HideDialog">OK</MatButton>
+        </MatDialogActions>
+    </MatDialog>
+</div>
+
+@code {
+        /// <summary>
+        /// Types that define the Dialog type to show a user.
+        /// Messages will be based on this type.
+        /// </summary>
+    public enum DialogTypes
+    {
+        ReservationMade,
+        ReservationDel,
+        Edit
+    }
+
+    [Parameter]
+    public DialogTypes DialogType { get; set; }
+
+    private bool dialogIsOpen = false;
+    private string title;   // Title of the dialog
+    private string message; // Message of the dialog
+
+    /// <summary>
+    /// Handler for the dialog.
+    /// </summary>
+    /// <param name="isSuccess">State of HTTP response.</param>
+    /// <param name="type">Dialog type to open.</param>
+    public void HandleDialog(bool isSuccess)
+    {
+        ShowDialog(isSuccess);
+    }
+
+    /// <summary>
+    /// Show Dialog with messages based on type.
+    /// </summary>
+    /// <param name="type">Dialog type to open.</param>
+    /// <param name="isSuccess">State of HTTP response.</param>
+    private void ShowDialog(bool isSuccess)
+    {
+        // Set "generic" title
+        title = isSuccess ? DialogType.ToString() + " - Successful" : DialogType.ToString() + " - Failed";
+
+        switch (DialogType)
+        {
+            case DialogTypes.ReservationMade:
+                message = isSuccess ? "Reservation made succesfully" : "Failed to reserve the book. Please try again later.";
+                break;
+            case DialogTypes.ReservationDel:
+                message = isSuccess ? "Reservation deleted succesfully" : "Failed to delete the reservation. Please try again later.";
+                break;
+            case DialogTypes.Edit:
+                message = isSuccess ? "Successfully updated listing" : "Failed to update listing. Please try again later.";
+                break;
+            default:
+                break;
+        }
+
+        dialogIsOpen = true;
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Handler to hide the dialog.
+    /// </summary>
+    private void HideDialog()
+    {
+        dialogIsOpen = false;
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Calls StateHasChanged to inform Blazor to rerender.
+    /// </summary>
+    private void UpdateUI()
+    {
+        base.StateHasChanged();
+    }
+}

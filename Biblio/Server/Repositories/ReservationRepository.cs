@@ -31,12 +31,15 @@ namespace Biblio.Server.Repositories
 
         public async Task<bool> DoesReservationExistForUserByBookCopyId(string userId, int bookCopyId)
         {
-            return await FindByCondition(r => r.ReservedCopyId == bookCopyId && r.ReservedById == userId).AnyAsync();
+            return await FindByCondition(r => r.ReservedCopyId == bookCopyId && r.ReservedById == userId).Select(r => new Reservation
+            {
+                ReservationId = r.ReservationId
+            }).AnyAsync();
         }
 
         public async Task<IEnumerable<Reservation>> GetAllReservationsByUser(string userId)
         {
-            return await FindByCondition(r => r.ReservedById == userId).Include(r => r.ReservedCopy).ToListAsync();
+            return await FindByCondition(r => r.ReservedById == userId).Include(r => r.ReservedCopy).ThenInclude(rc => rc.Book).Include(r => r.Library).ToListAsync();
         }
 
         public async Task<Reservation> GetReservationById(int ReservationId)
@@ -52,6 +55,11 @@ namespace Biblio.Server.Repositories
         public void UpdateReservation(Reservation reservation)
         {
             Update(reservation);
+        }
+
+        public async Task<Reservation> GetReservationForUserByBookCipyId(string userId, int bookCopyId)
+        {
+            return await FindByCondition(r => r.ReservedById == userId && r.ReservedCopyId == bookCopyId).FirstOrDefaultAsync();
         }
     }
 }

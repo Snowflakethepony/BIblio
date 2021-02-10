@@ -55,7 +55,7 @@ namespace Biblio.Server.Data
             //});
 
             // ********** //
-            // Below logic is meant to deal with 2 many-to-many relations between BookCopy and Library. //
+            // Below logic is meant to deal with 2 one-to-many relations between BookCopy and Library. //
             // One with cascade delete as that library owns the instance of the bookcopy the other with no action as that libray instance are only borrowing the instance of bookcopy //
             // ********** //
             modelBuilder.Entity<BookCopy>()

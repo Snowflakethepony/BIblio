@@ -50,6 +50,28 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult<List<BookCopyDTO>>> FindBookCopiesByQuery(string type, string queryText)
+        {
+            IEnumerable<BookCopy> bookCopies = new List<BookCopy>();
+
+            if (type == "Author")
+            {
+                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByAuthor(queryText);
+            }
+            else if (type == "Title")
+            {
+                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByBookTitle(queryText);
+            }
+            else if (type == "Genre")
+            {
+                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByGenre(queryText);
+            }
+
+            return Ok(_mapper.Map<List<BookCopyDTO>>(bookCopies));
+        }
+
+
+        [HttpGet]
         public async Task<ActionResult<List<BookCopyDTO>>> GetAllBookCopiesReturnOverdueForLibrary(int libraryId)
         {
             return Ok(_mapper.Map<List<BookCopyDTO>>(await _wrapper.BookCopyRepository.GetAllBookCopiesReturnOverdueForLibrary(libraryId)));
@@ -73,14 +95,15 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateBookCopy(int bookCopyId, [FromBody] BookCopyDTO bookCopy)
+        public async Task<IActionResult> UpdateBookCopyFromDTO(int bookCopyId, [FromBody] BookCopyDTO bookCopy)
         {
             if (bookCopyId != bookCopy.BookCopyId)
             {
                 return BadRequest();
             }
 
-            _wrapper.BookCopyRepository.UpdateBookCopy(_mapper.Map<BookCopy>(bookCopy));
+            var mappedBook = _mapper.Map<BookCopy>(_mapper.Map<BookCopyDTOMinusRelations>(bookCopy));
+            _wrapper.BookCopyRepository.UpdateBookCopy(mappedBook);
 
             try
             {

@@ -19,7 +19,7 @@ namespace Biblio.Shared.Models.DTOs
         public BookCopyDTO ReservedCopy { get; set; }
 
         public int LibraryId { get; set; }
-        public LibraryDTO Library { get; set; }
+        public LibraryDTOMinusRelations Library { get; set; }
 
         public string ReservedById { get; set; }
         public ApplicationUserDTOMinusRelations ReservedBy { get; set; }

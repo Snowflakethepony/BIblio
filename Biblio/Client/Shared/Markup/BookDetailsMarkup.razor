@@ -1,0 +1,38 @@
+﻿@if (book == null)
+{
+    <h1 class="movieDetail-title">Book not found!</h1>
+}
+else
+{
+    <h1 class="movieDetail-title">@book.Title</h1>
+
+    <div class="star-rating-avg">
+        <p>Published: @book.PublishedDate</p>
+    </div>
+    <img class="movieDetial-banner" src="@SharedProperties.GetImageUrl(book)" />
+    <div class="movie-details">
+        <h2>Overview</h2>
+        <p>@book.Blurb</p>
+    </div>
+    <div class="movie-details">
+    </div>
+    <div class="movie-details">
+        @if (null != book.Authors && 0 < book.Authors.Count())
+        {
+            <h4>Authors</h4>
+            <ul>
+
+                @foreach (var author in book.Authors)
+                {
+                    <li>@author.FullName</li>
+                }
+
+            </ul>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public BookDTO book { get; set; }
+}

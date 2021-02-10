@@ -29,9 +29,11 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ReservationDTO>>> GetAllReservationsByUser(string userId)
+        public async Task<ActionResult<List<ReservationDTO>>> GetAllReservationsByUser(string username)
         {
-            return Ok(_mapper.Map<List<ReservationDTO>>(await _wrapper.ReservationRepository.GetAllReservationsByUser(userId)));
+            var user = await _usermanager.FindByNameAsync(username);
+
+            return Ok(_mapper.Map<List<ReservationDTO>>(await _wrapper.ReservationRepository.GetAllReservationsByUser(user.Id)));
         }
 
         [HttpGet]
@@ -57,13 +59,27 @@ namespace Biblio.Server.Controllers
         {
             var user = await _usermanager.FindByNameAsync(username);
 
-            return Ok(_wrapper.ReservationRepository.DoesReservationExistForUserByBookCopyId(user.Id, bookCopyId));
+            return Ok(await _wrapper.ReservationRepository.DoesReservationExistForUserByBookCopyId(user.Id, bookCopyId));
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReservationDTO>> CreateReservation([FromBody] ReservationDTO reservation)
+        public async Task<ActionResult<ReservationDTO>> CreateReservationFromDto(string username, [FromBody] BookCopyDTO bookCopy)
         {
-            _wrapper.ReservationRepository.CreateReservation(_mapper.Map<Reservation>(reservation));
+            var user = await _usermanager.FindByNameAsync(username);
+
+            var isForeign = !(user.HomeLibraryId == bookCopy.OriginLibraryId);
+
+            var reservation = new Reservation()
+            {
+                IsForeignBorrower = isForeign,
+                ExpirationDate = isForeign ? new DateTime().AddDays(7) : null,
+                LibraryId = bookCopy.OriginLibraryId,
+                ReservedAt = DateTime.Now,
+                ReservedById = user.Id,
+                ReservedCopyId = bookCopy.BookCopyId
+            };
+
+            _wrapper.ReservationRepository.CreateReservation(reservation);
 
             try
             {
@@ -74,7 +90,7 @@ namespace Biblio.Server.Controllers
                 return BadRequest(e.Message);
             }
 
-            return CreatedAtAction(nameof(CreateReservation), new { id = reservation.ReservationId }, reservation);
+            return CreatedAtAction(nameof(CreateReservationFromDto), new { id = reservation.ReservationId }, _mapper.Map<ReservationDTO>(reservation));
         }
 
         [HttpPut]
@@ -110,6 +126,34 @@ namespace Biblio.Server.Controllers
         public async Task<IActionResult> DeleteReservation(int reservationId)
         {
             var reservation = await _wrapper.ReservationRepository.GetReservationById(reservationId);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            _wrapper.ReservationRepository.DeleteReservation(reservation);
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReservationForUserByBookCopyId(string username, int bookCopyId)
+        {
+            // Get user
+            var user = await _usermanager.FindByNameAsync(username);
+
+            // Look for existing reservation.
+            var reservation = await _wrapper.ReservationRepository.GetReservationForUserByBookCipyId(username, bookCopyId);
 
             if (reservation == null)
             {

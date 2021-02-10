@@ -85,7 +85,7 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateBook(int bookId, [FromBody] BookDTO book)
+        public async Task<IActionResult> UpdateBookFromDTO(int bookId, [FromBody] BookDTO book)
         {
             if (bookId != book.BookId)
             {

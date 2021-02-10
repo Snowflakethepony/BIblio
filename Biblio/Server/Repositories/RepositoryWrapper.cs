@@ -135,7 +135,14 @@ namespace Biblio.Server.Repositories
 
         public async Task<int> SaveAsync()
         {
-            return await DbContext.SaveChangesAsync();
+            try
+            {
+                return await DbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }

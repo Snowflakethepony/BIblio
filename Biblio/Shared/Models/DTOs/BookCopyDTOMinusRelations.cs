@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Biblio.Shared.Models.DTOs
 {
-    public class BookCopyDTO
+    public class BookCopyDTOMinusRelations
     {
         public int BookCopyId { get; set; }
         public bool IsAvailable { get; set; }
@@ -22,17 +22,9 @@ namespace Biblio.Shared.Models.DTOs
         /// </summary>
         public string RFID { get; private set; }
 
-        // Relations
         public int BookId { get; set; }
-        public BookDTO Book { get; set; }
-
         public string ApplicationUserId { get; set; }
-        public ApplicationUserDTOMinusRelations Renter { get; set; }
-
         public int OriginLibraryId { get; set; }
-        public LibraryDTOMinusRelations OriginLibrary { get; set; }
-
         public int CurrentLibraryId { get; set; }
-        public LibraryDTOMinusRelations CurrentLibrary { get; set; }
     }
 }

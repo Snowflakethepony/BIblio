@@ -14,13 +14,12 @@
             default:
                 break;
         }
-
         break;
     case SharedProperties.ViewState.ShowList:
         @switch (BookType)
         {
             case SharedProperties.BookTypes.Book:
-                <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookDTO>)inputObjectList)" />
+                <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" books="@((List<BookDTO>)inputObjectList)" />
                 break;
             case SharedProperties.BookTypes.Copy:
                 <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" />
@@ -28,8 +27,6 @@
             default:
                 break;
         }
-        break;
-    case SharedProperties.ViewState.Editing:
         break;
     default:
         break;
@@ -76,19 +73,23 @@
         }
         else
         {
-            switch (BookType)
-            {
-                case SharedProperties.BookTypes.Book:
-                    var book = row as BookDTO;
-                    OnDetailClick.InvokeAsync(book);
-                    break;
-                case SharedProperties.BookTypes.Copy:
-                    var bookCopy = row as BookCopyDTO;
-                    OnDetailClick.InvokeAsync(bookCopy);
-                    break;
-                default:
-                    break;
-            }
+            //switch (BookType)
+            //{
+            //    case SharedProperties.BookTypes.Book:
+            //        var book = row as BookDTO;
+            //        //OnDetailClick.InvokeAsync(book);
+            //        OnDetailClick2(row);
+            //        break;
+            //    case SharedProperties.BookTypes.Copy:
+            //        var bookCopy = row as BookCopyDTO;
+            //        //OnDetailClick.InvokeAsync(bookCopy);
+            //        OnDetailClick2(row);
+            //        break;
+            //    default:
+            //        break;
+            //}
+
+            OnDetailClick2(row);
         }
 
     }

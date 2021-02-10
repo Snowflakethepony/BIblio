@@ -1,0 +1,62 @@
+﻿@page "/myreservations"
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<h3>My Reservations</h3>
+<p>Here you can see all your current reservations in the table below. You can delete reservations by clicking the delete button in the row of the reservation you want to delete.</p>
+
+<div>
+    <MatTable Items="reservations" class="mat-elevation-z5" AllowSelection="true">
+        <MatTableHeader>
+            <th>Reserved book</th>
+            <th>From library</th>
+            <th>Is sent</th>
+            <th>Expiration date</th>
+            <th>Actions</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.ReservedCopy.Book.Title</td>
+            <td>@context.Library.Name</td>
+            <td>@context.IsSent</td>
+            <td>@(context.ExpirationDate == null ? "No expiration set" : context.ExpirationDate)</td>
+            <td><MatButton Raised="true" Label="Delete Reservation" OnClick="@(() => DeleteReservationHandler(context.ReservationId))" /></td>
+        </MatTableRow>
+    </MatTable>
+
+    <DialogShower @ref="@dialogShower" DialogType="@DialogShower.DialogTypes.ReservationDel" />
+</div>
+
+@code {
+    private List<ReservationDTO> reservations;
+    private string username;
+    DialogShower dialogShower;
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Set username.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        username = authState.User.Identity.Name;
+
+        // Get
+        reservations = await Http.GetFromJsonAsync<List<ReservationDTO>>($"api/Reservations/GetAllReservationsByUser?username={ username }");
+    }
+
+    private async Task DeleteReservationHandler(int id)
+    {
+        HttpResponseMessage response;
+
+        response = await Http.DeleteAsync($"api/Reservations/DeleteReservation?reservationId={ id }");
+
+        if (response.IsSuccessStatusCode)
+        {
+            reservations.Remove(reservations.FirstOrDefault(r => r.ReservationId == id));
+        }
+
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+    }
+}

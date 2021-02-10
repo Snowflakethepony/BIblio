@@ -8,23 +8,6 @@ namespace Biblio.Shared.Models.DTOs
 {
     public class BookDTO
     {
-        /// <summary>
-        /// Booksformats supported.
-        /// </summary>
-        public enum BookFormats
-        {
-            Hardcover,
-            Softcover,
-            Paperback,
-            Folded
-        }
-
-        public enum BookTypes
-        {
-            Fiction,
-            NonFiction,
-        }
-
         public int BookId { get; set; }
         public string Title { get; set; }
         public string Blurb { get; set; }
@@ -35,8 +18,8 @@ namespace Biblio.Shared.Models.DTOs
         public short? Weight { get; set; }
         public int NumberofPages { get; set; }
         public byte[] Image { get; set; }
-        public BookFormats Format { get; set; }
-        public BookTypes Type { get; set; }
+        public BookProperties.BookFormats Format { get; set; }
+        public BookProperties.BookTypes Type { get; set; }
 
         public ICollection<AuthorDTO> Authors { get; set; }
         public ICollection<GenreDTO> Genres { get; set; }

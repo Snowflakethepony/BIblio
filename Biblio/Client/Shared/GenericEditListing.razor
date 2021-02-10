@@ -28,20 +28,29 @@
 
     private async void SubmitChangesHandler(object changedListing)
     {
-        HttpResponseMessage response = new HttpResponseMessage();
-
-        switch (bookType)
+        if (changedListing == null)
         {
-            case SharedProperties.BookTypes.Book:
-                response = await Http.PutAsJsonAsync<BookDTO>($"api/Books/PutBookFromDto", (BookDTO)changedListing);
-                break;
-            case SharedProperties.BookTypes.Copy:
-                response = await Http.PutAsJsonAsync<BookCopyDTO>($"api/BookCopies/PutBookCopyFromDto", (BookCopyDTO)changedListing);
-                break;
-            default:
-                break;
+            OnsubmitHandled.InvokeAsync(null);
         }
+        else
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
 
-        OnsubmitHandled.InvokeAsync(response.IsSuccessStatusCode);
+            switch (bookType)
+            {
+                case SharedProperties.BookTypes.Book:
+                    var book = (BookDTO)changedListing;
+                    response = await Http.PutAsJsonAsync<BookDTO>($"api/Books/UpdateBookFromDTO?bookId={ book.BookId }", book);
+                    break;
+                case SharedProperties.BookTypes.Copy:
+                    var bookCopy = (BookCopyDTO)changedListing;
+                    response = await Http.PutAsJsonAsync<BookCopyDTO>($"api/BookCopies/UpdateBookCopyFromDTO?bookCopyId={ bookCopy.BookCopyId }", bookCopy);
+                    break;
+                default:
+                    break;
+            }
+
+            OnsubmitHandled.InvokeAsync(response.IsSuccessStatusCode);
+        }
     }
 }

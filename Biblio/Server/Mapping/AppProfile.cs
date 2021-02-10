@@ -27,6 +27,12 @@ namespace Biblio.Server.Mapping
             CreateMap<BookCopy, BookCopyDTO>();
             CreateMap<BookCopyDTO, BookCopy>();
 
+            CreateMap<BookCopy, BookCopyDTOMinusRelations>();
+            CreateMap<BookCopyDTOMinusRelations, BookCopy>();
+
+            CreateMap<BookCopyDTO, BookCopyDTOMinusRelations>();
+            CreateMap<BookCopyDTOMinusRelations, BookCopyDTO>();
+
             // Book mappings
             CreateMap<Book, BookDTO>();
             CreateMap<BookDTO, Book>();
@@ -36,15 +42,19 @@ namespace Biblio.Server.Mapping
             CreateMap<GenreDTO, Genre>();
 
             // Library mappings
-            CreateMap<Shared.Models.Library, LibraryDTO>();
-            CreateMap<LibraryDTO, Shared.Models.Library>();
+            CreateMap<Library, LibraryDTO>();
+            CreateMap<LibraryDTO, Library>();
 
-            CreateMap<Shared.Models.Library, LibraryDTOMinusRelations>();
-            CreateMap<LibraryDTOMinusRelations, Shared.Models.Library>();
+            CreateMap<Library, LibraryDTOMinusRelations>();
+            CreateMap<LibraryDTOMinusRelations, Library>();
 
             // RentedBookHistory mappings
             CreateMap<BorrowedBookHistory, BorrowedBookHistoryDTO>();
             CreateMap<BorrowedBookHistoryDTO, BorrowedBookHistory>();
+
+            // Reservation mappings
+            CreateMap<Reservation, ReservationDTO>();
+            CreateMap<ReservationDTO, Reservation>();
         }
     }
 }

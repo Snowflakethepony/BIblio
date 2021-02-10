@@ -12,6 +12,9 @@ namespace Biblio.Server.Interfaces
         Task<IEnumerable<BookCopy>> GetAllBookCopiesReturnOverdueForLibrary(int libraryId);
         Task<IEnumerable<BookCopy>> GetAllBookCopiesByBookIdForLibrary(int bookId, int libraryId);
         Task<IEnumerable<BookCopy>> GetAllBookCopiesByBookId(int bookId);
+        Task<IEnumerable<BookCopy>> GetAllBookCopiesByBookTitle(string title);
+        Task<IEnumerable<BookCopy>> GetAllBookCopiesByAuthor(string author);
+        Task<IEnumerable<BookCopy>> GetAllBookCopiesByGenre(string genre);
         Task<IEnumerable<BookCopy>> GetAllBookCopiesForUser(string userId);
         Task<BookCopy> GetBookCopyById(int bookCopyId);
         Task<BookCopy> GetBookCopyByIdIncludingRelation(int bookCopyId);

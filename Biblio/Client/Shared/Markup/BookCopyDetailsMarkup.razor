@@ -1,0 +1,39 @@
+﻿@if (bookCopy == null)
+{
+    <h1 class="movieDetail-title">Book copy not found!</h1>
+}
+else
+{
+    <h1 class="movieDetail-title">@bookCopy.Book.Title</h1>
+
+    <div class="star-rating-avg">
+        <p>Published: @bookCopy.Book.PublishedDate</p>
+    </div>
+    <img class="movieDetial-banner" src="@SharedProperties.GetImageUrl(bookCopy.Book)" />
+    <div class="movie-details">
+        <h2>Overview</h2>
+        <p>@bookCopy.Book.Blurb</p>
+    </div>
+    <div class="movie-details">
+        <p>Available: @SharedProperties.BoolToHumanTongue(bookCopy.IsAvailable)</p>
+    </div>
+    <div class="movie-details">
+        @if (null != bookCopy.Book.Authors && 0 < bookCopy.Book.Authors.Count())
+        {
+            <h4>Authors</h4>
+            <ul>
+
+                @foreach (var author in bookCopy.Book.Authors)
+                {
+                    <li>@author.FullName</li>
+                }
+
+            </ul>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public BookCopyDTO bookCopy { get; set; }
+}

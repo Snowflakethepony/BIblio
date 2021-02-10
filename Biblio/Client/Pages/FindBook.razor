@@ -1,0 +1,44 @@
+﻿@page "/findbooks"
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient Http
+
+
+<h3>Find Books</h3>
+
+<p>
+    <MatSelectItem @bind-Value="@queryType" Items="@queryTypes"></MatSelectItem>
+    <MatTextField @bind-Value="@query" Label="Title"></MatTextField>
+    <MatButton OnClick="@SearchMovie" Raised="true">Search</MatButton>
+</p>
+
+@if (bookCopies.Count <= 0)
+{
+    <p>Please search for a book to display a list!</p>
+}
+else
+{
+    <GenericBookList DisplayType="@SharedProperties.DisplayTypes.Table" ViewState="@SharedProperties.ViewState.ShowList" BookType="@SharedProperties.BookTypes.Copy" inputObjectList="@bookCopies" />
+}
+
+@code {
+    private List<BookCopyDTO> bookCopies = new List<BookCopyDTO>();
+    private BookCopyDTO bookCopy = new BookCopyDTO();
+    private string query = "";
+    private bool showDetails = false;
+    private string queryType = "Title";
+
+    private string[] queryTypes = new[]
+    {
+        "Title",
+        "Genre",
+        "Author"
+    };
+
+    private async void SearchMovie()
+    {
+        // Get books
+        bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/FindBookCopiesByQuery?type={ queryType }&queryText={ query }");
+        base.StateHasChanged();
+    }
+}

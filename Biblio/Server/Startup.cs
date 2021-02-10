@@ -81,7 +81,7 @@ namespace Biblio.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddTransient<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -117,7 +117,7 @@ namespace Biblio.Server
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Biblio API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Biblio API V1"); // /swagger/
             });
 
             app.UseEndpoints(endpoints =>

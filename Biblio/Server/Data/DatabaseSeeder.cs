@@ -50,7 +50,7 @@ namespace Biblio.Server.Data
                     },
                     Title = "IT",
                     Blurb = "'They float... and when you're down here with me, you'll float, too. 'To the children, the town was their whole world. To the adults, knowing better, Derry Maine was just their home town: familiar, well-ordered for the most part. A good place to live. It is the children who see - and feel - what makes the small town of Derry so horribly different. In the storm drains, in the sewers, IT lurks, taking on the shape of every nightmare, each one's deepest dread. Sometimes IT reaches up, seizing, tearing, killing... Time passes and the children grow up, move away and forget. Until they are called back, once more to confront IT as IT stirs and coils in the sullen depths of their memories, reaching up again to make their past nightmares a terrible present reality.",
-                    Format = Book.BookFormats.Hardcover,
+                    Format = BookProperties.BookFormats.Hardcover,
                     Genres = new List<Genre>()
                     {
                         genres.FirstOrDefault(g => g.Name == "Horror")
@@ -60,7 +60,7 @@ namespace Biblio.Server.Data
                     Depth = 63,
                     Height = 178,
                     Width = 128,
-                    Type = Book.BookTypes.Fiction,
+                    Type = BookProperties.BookTypes.Fiction,
                     PublishedDate = DateTime.Parse("25-07-2017"),
                     Image = null
                 }

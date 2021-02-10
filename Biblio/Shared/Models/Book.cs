@@ -12,23 +12,6 @@ namespace Biblio.Shared.Models
     /// </summary>
     public class Book
     {
-        /// <summary>
-        /// Booksformats supported.
-        /// </summary>
-        public enum BookFormats
-        {
-            Hardcover,
-            Softcover,
-            Paperback,
-            Folded
-        }
-
-        public enum BookTypes
-        {
-            Fiction,
-            NonFiction,
-        }
-
         [Key]
         public int BookId { get; set; }
         [Required]
@@ -42,8 +25,8 @@ namespace Biblio.Shared.Models
         public short? Weight { get; set; }
         public short NumberofPages { get; set; }
         public byte[] Image { get; set; }
-        public BookFormats Format { get; set; }
-        public BookTypes Type { get; set; }
+        public BookProperties.BookFormats Format { get; set; }
+        public BookProperties.BookTypes Type { get; set; }
 
         // Relations
         public ICollection<Author> Authors { get; set; }

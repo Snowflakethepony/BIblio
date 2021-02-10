@@ -32,10 +32,10 @@
         <MatTextField @bind-Value="@book.NumberofPages" TValue="int" Label="Number of pages" Required="true" />
     </p>
     <p>
-        <MatSelectItem @bind-Value="@book.Format" TValue="BookDTO.BookFormats" Items="@formatItems"></MatSelectItem>
+        <MatSelectItem @bind-Value="@book.Format" TValue="BookProperties.BookFormats" Items="@formatItems"></MatSelectItem>
     </p>
     <p>
-        <MatSelectItem @bind-Value="@book.Type" TValue="BookDTO.BookTypes"  Items="@typeItems"></MatSelectItem>
+        <MatSelectItem @bind-Value="@book.Type" TValue="BookProperties.BookTypes"  Items="@typeItems"></MatSelectItem>
     </p>
     <p>
         <MatFileUpload OnChange="@FilesReady" Label="Drop an image file here or Browse"></MatFileUpload>
@@ -56,8 +56,8 @@
     [Parameter]
     public BookDTO book { get; set; }
 
-    private BookDTO.BookFormats[] formatItems = Enum.GetValues(typeof(BookDTO.BookFormats)).Cast<BookDTO.BookFormats>().ToArray();
-    private BookDTO.BookTypes[] typeItems = Enum.GetValues(typeof(BookDTO.BookTypes)).Cast<BookDTO.BookTypes>().ToArray();
+    private BookProperties.BookFormats[] formatItems = Enum.GetValues(typeof(BookProperties.BookFormats)).Cast<BookProperties.BookFormats>().ToArray();
+    private BookProperties.BookTypes[] typeItems = Enum.GetValues(typeof(BookProperties.BookTypes)).Cast<BookProperties.BookTypes>().ToArray();
 
     private async Task FilesReady(IMatFileUploadEntry[] files)
     {
@@ -79,7 +79,7 @@
         }
         catch (Exception e)
         {
-
+            throw new Exception(e.Message);
         }
     }
 }

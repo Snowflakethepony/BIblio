@@ -18,7 +18,6 @@ Welcome to your new app.
         Console.WriteLine("INDEX");
         bookCopyList = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesByBookId?bookId={ 1 }");
         Console.WriteLine(bookCopyList);
-
     }
 
     public void noting()
