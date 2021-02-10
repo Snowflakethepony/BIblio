@@ -1,7 +1,8 @@
-﻿@page "/findbooks"
+﻿@page "/findbooksphysical"
 @using System.Net.Http
 @using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
+@attribute [Authorize(Roles = "LibraryAdmin")]
 
 
 <h3>Find Books</h3>

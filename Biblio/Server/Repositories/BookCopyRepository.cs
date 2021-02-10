@@ -46,8 +46,8 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<BookCopy>> GetAllBookCopiesByBookTitle(string title)
         {
-            return await (from bc in base.DbContext.BookCopies.Include(bc => bc.OriginLibrary).Include(bc => bc.Book).ThenInclude(b => b.Genres).AsNoTracking()
-                          where bc.Book.Title.Contains(title)
+            return await (from bc in base.DbContext.BookCopies.Include(bc => bc.OriginLibrary).Include(bc => bc.Book).ThenInclude(b => b.Genres).Include(bc => bc.Book).ThenInclude(b => b.Authors).AsNoTracking()
+                          where bc.Book.Title.ToUpper().Contains(title.ToUpper())
                           select bc).ToListAsync();
 
             //return await FindBySqlLike(typeof(BookCopy), ).Include(bc => bc.OriginLibrary).Include(bc => bc.CurrentLibrary).ToListAsync();

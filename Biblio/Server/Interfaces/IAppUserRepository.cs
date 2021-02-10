@@ -11,5 +11,7 @@ namespace Biblio.Server.Interfaces
         Task<List<ApplicationUser>> GetAllApplicationUsersByLibrary(int libraryId);
         Task<ApplicationUser> GetApplicationUserById(string id);
         Task<ApplicationUser> GetApplicationUserByBookId(int bookCopyId);
+        Task<ApplicationUser> GetApplicationUserByUsername(string username);
+        void UpdateAppUser(ApplicationUser appUser);
     }
 }

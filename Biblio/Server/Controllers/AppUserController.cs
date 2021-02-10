@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Biblio.Server.Interfaces;
+using Biblio.Shared.Models;
 using Biblio.Shared.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +19,13 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _usermanager;
 
-        public AppUserController(IRepositoryWrapper wrapper, IMapper mapper)
+        public AppUserController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<ApplicationUser> usermanager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;
+            this._usermanager = usermanager;
         }
 
         /// <summary>
@@ -54,6 +59,67 @@ namespace Biblio.Server.Controllers
         public async Task<ActionResult<ApplicationUserDTO>> GetApplicationUserByBookId(int bookCopyId)
         {
             return Ok(_mapper.Map<ApplicationUserDTO>(await _wrapper.AppUserRepository.GetApplicationUserByBookId(bookCopyId)));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ApplicationUserDTO>> GetApplicationUserByUsername(string username)
+        {
+            return Ok(_mapper.Map<ApplicationUserDTO>(await _wrapper.AppUserRepository.GetApplicationUserByUsername(username)));
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUserLibrary(string username, int librayId)
+        {
+            var user = await _usermanager.FindByNameAsync(username);
+
+            user.HomeLibraryId = librayId;
+
+            _wrapper.AppUserRepository.UpdateAppUser(user);
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAppUser(string appUserId, [FromBody] ApplicationUserDTO appUser)
+        {
+            if (appUserId != appUser.Id)
+            {
+                return BadRequest();
+            }
+
+            _wrapper.AppUserRepository.UpdateAppUser(_mapper.Map<ApplicationUser>(appUser));
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                if (!await AppUserExists(appUserId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return BadRequest(e.Message);
+                }
+            }
+
+            return Ok();
+        }
+
+        private async Task<bool> AppUserExists(string id)
+        {
+            return await _wrapper.AppUserRepository.GetApplicationUserById(id) != null;
         }
     }
 }

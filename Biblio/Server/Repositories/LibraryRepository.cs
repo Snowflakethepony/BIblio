@@ -34,12 +34,12 @@ namespace Biblio.Server.Repositories
             return await FindByCondition(l => l.LibraryId == id).Include(l => l.OwnedBooks).Include(l => l.ForeignBooks).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Shared.Models.Library>> GetLibrariesByName(string name)
+        public async Task<IEnumerable<Library>> GetLibrariesByName(string name)
         {
-            return await FindBySqlLike(nameof(Shared.Models.Library), nameof(Shared.Models.Library.Name), name).ToListAsync();
+            return await FindBySqlLike(typeof(Library).ToString(), nameof(Library.Name), name).ToListAsync();
         }
 
-        public void UpdateLibrary(Shared.Models.Library library)
+        public void UpdateLibrary(Library library)
         {
             Update(library);
         }

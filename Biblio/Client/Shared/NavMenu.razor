@@ -9,31 +9,45 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span aria-hidden="true"><MatIcon Icon="home"></MatIcon></span> Home
+                <span class="oi" aria-hidden="true"><MatIcon Icon="home"></MatIcon></span> Home
             </NavLink>
         </li>
 
         <AuthorizeView>
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/myreservations" Match="NavLinkMatch.All">
-                    <span aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> My Reservations
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> My Reservations
                 </NavLink>
             </li>
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/findbooks" Match="NavLinkMatch.All">
-                    <span aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Find Books
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Find Books
                 </NavLink>
             </li>
 
         </AuthorizeView>
 
         <AuthorizeView Roles="LibraryAdmin">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/findbooksphysical" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Find Book Location
+                </NavLink>
+            </li>
 
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/managehomelibrary" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Manage Home
+                </NavLink>
+            </li>
         </AuthorizeView>
 
-        <AuthorizeView Roles="SystemAdmin">
-
+        <AuthorizeView Roles="SiteAdministrator">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/managehomelibrary" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> POOOOWER!
+                </NavLink>
+            </li>
         </AuthorizeView>
     </ul>
 </div>

@@ -66,7 +66,7 @@ else
                 </MatTableHeader>
                 <MatTableRow>
                     <td>@context.Book.Title</td>
-                    <td>@context.Book.Authors.FirstOrDefault()</td>
+                    <td>@context.Book.Authors.FirstOrDefault().FullName</td>
                     @if (IsAdminFindPage)
                     {
                         <td>@context.ShelfNumber</td>

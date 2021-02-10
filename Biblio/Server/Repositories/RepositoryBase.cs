@@ -32,7 +32,8 @@ namespace Biblio.Server.Repositories
         public IQueryable<T> FindBySqlLike(string model, string property, string query)
         {
             // Get the property
-            var modelProp = Type.GetType(model).GetProperty(property);
+            var modelType = Type.GetType(model);
+            var modelProp = Type.GetType(modelType.FullName + ", " + modelType.Assembly.FullName).GetProperty(property);
 
             return from a in this.DbContext.Set<T>().AsNoTracking() where EF.Functions.Like(modelProp.Name, query) select a;
         }

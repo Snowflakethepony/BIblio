@@ -28,5 +28,15 @@ namespace Biblio.Server.Repositories
         {
             return await FindByPrimaryKey(id);
         }
+
+        public async Task<ApplicationUser> GetApplicationUserByUsername(string username)
+        {
+            return await FindByCondition(au => au.NormalizedUserName == username.ToUpper()).FirstOrDefaultAsync();
+        }
+
+        public void UpdateAppUser(ApplicationUser appUser)
+        {
+            Update(appUser);
+        }
     }
 }
