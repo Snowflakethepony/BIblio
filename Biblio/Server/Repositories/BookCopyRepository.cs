@@ -117,6 +117,11 @@ namespace Biblio.Server.Repositories
             return await FindByCondition(bc => bc.OriginLibraryId == libraryId && bc.ReturnBy < DateTime.Now).Include(bc => bc.Borrower).Include(bc => bc.OriginLibrary).Include(bc => bc.CurrentLibrary).ToListAsync();
         }
 
+        public async Task<BookCopy> GetBookCopyByRFID(string RFID)
+        {
+            return await FindByCondition(bc => bc.RFID.ToUpper() == RFID.ToUpper()).Include(bc => bc.Book).ThenInclude(b => b.Authors).FirstOrDefaultAsync();
+        }
+
         public async Task<BookCopy> GetBookCopyById(int bookCopyId)
         {
             return await FindByPrimaryKey(bookCopyId);

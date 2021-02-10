@@ -66,6 +66,10 @@ namespace Biblio.Server.Controllers
             {
                 bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByGenre(queryText);
             }
+            else if (type == "RFID")
+            {
+                bookCopies.Append(await _wrapper.BookCopyRepository.GetBookCopyByRFID(queryText));
+            }
 
             return Ok(_mapper.Map<List<BookCopyDTO>>(bookCopies));
         }

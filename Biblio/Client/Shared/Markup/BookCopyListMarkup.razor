@@ -53,14 +53,28 @@ else
                 <MatTableHeader>
                     <th>Title</th>
                     <th>Author</th>
-                    <th>Library</th>
+                    @if (IsAdminFindPage)
+                    {
+                        <th>Shelf Number</th>
+                    }
+                    else
+                    {
+                        <th>Library</th>
+                    }
                     <th>Available</th>
                     <th>Blurb</th>
                 </MatTableHeader>
                 <MatTableRow>
                     <td>@context.Book.Title</td>
                     <td>@context.Book.Authors.FirstOrDefault()</td>
-                    <td>@context.OriginLibrary.Name</td>
+                    @if (IsAdminFindPage)
+                    {
+                        <td>@context.ShelfNumber</td>
+                    }
+                    else
+                    {
+                        <td>@context.OriginLibrary.Name</td>
+                    }
                     <td>@context.IsAvailable</td>
                     <td>@context.Book.Blurb</td>
                 </MatTableRow>
@@ -85,6 +99,9 @@ else
     [Parameter]
     public Action<object> SelectionChangedEvent { get; set; }
 
+    [Parameter]
+    public bool IsAdminFindPage { get; set; }
+
     private string GetImageUrl(BookDTO bookDTO)
     {
         if (bookDTO.Image == null || bookDTO.Image.Length == 0)
@@ -92,7 +109,7 @@ else
             return SharedProperties.BaseBookCoverUrl;
         }
         else
-        { 
+        {
             return string.Format("data:image/png;base64,{0}", Convert.ToBase64String(bookDTO.Image));
         }
     }
