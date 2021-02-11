@@ -16,7 +16,7 @@
         <AuthorizeView>
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/myreservations" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> My Reservations
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="assignment"></MatIcon></span> My Reservations
                 </NavLink>
             </li>
 
@@ -28,7 +28,7 @@
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/borrowedbooks" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Borrowed Books
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="assignment"></MatIcon></span> Borrowed Books
                 </NavLink>
             </li>
 
@@ -37,13 +37,25 @@
         <AuthorizeView Roles="LibraryAdmin">
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/findbooksphysical" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Find Book Location
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="location_on"></MatIcon></span> Find Book Location
+                </NavLink>
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/borrowbooks" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="book"></MatIcon></span> Borrow Books
+                </NavLink>
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/returnbooks" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="assignment_return"></MatIcon></span> Return Books
                 </NavLink>
             </li>
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/managehomelibrary" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Manage Home
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Manage Home
                 </NavLink>
             </li>
         </AuthorizeView>

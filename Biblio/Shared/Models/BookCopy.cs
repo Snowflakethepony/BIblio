@@ -26,7 +26,7 @@ namespace Biblio.Shared.Models
         /// Used in system to loan, return and rerent by scanning and locating the book instance inside the system. 
         /// This is just randomly generated at BookCopy instance creation to an 8 letter string.
         /// </summary>
-        public string RFID { get; private set; }
+        public string RFID { get; set; }
 
         // Relations
         [ForeignKey("BookId")]

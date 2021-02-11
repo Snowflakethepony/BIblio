@@ -21,9 +21,13 @@
         ReservationMade,
         ReservationDel,
         Edit,
-        Rent,
+        Borrow,
         Home,
-        Extent
+        Extent,
+        IsReserved,
+        IsBorrowed,
+        UnAvailable,
+        Return
     }
 
     [Parameter]
@@ -64,14 +68,27 @@
             case DialogTypes.Edit:
                 message = isSuccess ? "Successfully updated listing" : "Failed to update listing. Please try again later.";
                 break;
-            case DialogTypes.Rent:
-                message = isSuccess ? "Successfully loaned the book(s)" : "Failed to loan the book(s). Please try again later.";
+            case DialogTypes.Borrow:
+                message = isSuccess ? "Successfully borrowed the book(s)" : "Failed to borrow the book(s). Please try again later.";
                 break;
             case DialogTypes.Home:
                 message = isSuccess ? "Successfully changed home library" : "Failed to change home library. Please try again later.";
                 break;
             case DialogTypes.Extent:
                 message = isSuccess ? "Successfully extented borrowing period" : "Failed to extent borrowing period. Please try again later.";
+                break;
+            case DialogTypes.IsBorrowed:
+                message = "This book is already borrowed!";
+                break;
+            case DialogTypes.IsReserved:
+                message = "This book is reserved by another person! Please return to a librarian.";
+                break;
+            case DialogTypes.UnAvailable:
+                title = "NOTE";
+                message = "One or more books are unavailable!";
+                break;
+            case DialogTypes.Return:
+                message = isSuccess ? "Successfully returned the book(s)" : "Failed to return the book(s). Please try again later.";
                 break;
             default:
                 break;

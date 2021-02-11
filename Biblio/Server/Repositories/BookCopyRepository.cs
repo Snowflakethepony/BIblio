@@ -117,9 +117,19 @@ namespace Biblio.Server.Repositories
             return await FindByCondition(bc => bc.OriginLibraryId == libraryId && bc.ReturnBy < DateTime.Now).Include(bc => bc.Borrower).Include(bc => bc.OriginLibrary).Include(bc => bc.CurrentLibrary).ToListAsync();
         }
 
+        public async Task<BookCopy> GetAvailableBookCopyByRFID(string RFID)
+        {
+            return await FindByCondition(bc => bc.RFID.ToUpper() == RFID.ToUpper() && bc.IsAvailable == true).Include(bc => bc.Book).ThenInclude(b => b.Authors).Include(bc => bc.Book).ThenInclude(b => b.Genres).Include(bc => bc.OriginLibrary).FirstOrDefaultAsync();
+        }
+
         public async Task<BookCopy> GetBookCopyByRFID(string RFID)
         {
-            return await FindByCondition(bc => bc.RFID.ToUpper() == RFID.ToUpper()).Include(bc => bc.Book).ThenInclude(b => b.Authors).FirstOrDefaultAsync();
+            return await FindByCondition(bc => bc.RFID.ToUpper() == RFID.ToUpper()).Include(bc => bc.Book).ThenInclude(b => b.Authors).Include(bc => bc.Book).ThenInclude(b => b.Genres).Include(bc => bc.OriginLibrary).FirstOrDefaultAsync();
+        }
+
+        public async Task<BookCopy> GetBookCopyByRFIDNoRelations(string RFID)
+        {
+            return await FindByCondition(bc => bc.RFID.ToUpper() == RFID.ToUpper()).FirstOrDefaultAsync();
         }
 
         public async Task<BookCopy> GetBookCopyById(int bookCopyId)

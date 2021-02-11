@@ -11,7 +11,7 @@ namespace Biblio.Shared.Models.DTOs
         public int BookCopyId { get; set; }
         public bool IsAvailable { get; set; }
         public int ShelfNumber { get; set; }
-        public DateTime? RentedAt { get; set; }
+        public DateTime? BorrowedAt { get; set; }
         public DateTime? ReturnBy { get; set; }
         public int? TimesRerented { get; set; }
 
@@ -20,7 +20,7 @@ namespace Biblio.Shared.Models.DTOs
         /// Used in system to loan, return and rerent by scanning and locating the book instance inside the system. 
         /// This is just randomly generated at BookCopy instance creation to an 8 letter string.
         /// </summary>
-        public string RFID { get; private set; }
+        public string RFID { get; set; }
 
         // Relations
         public int BookId { get; set; }

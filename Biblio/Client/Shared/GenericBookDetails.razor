@@ -215,7 +215,7 @@ else
 
     private async void ExtentPeriodHandler(MouseEventArgs e)
     {
-        var response = await Http.DeleteAsync($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+        var response = await Http.PutAsync($"api/BookCopies/ExtentBorrowPeriodById?bookCopyId={ bookCopy.BookCopyId }", null);
 
         dialogType = DialogShower.DialogTypes.Extent;
         dialogShower.HandleDialog(response.IsSuccessStatusCode);

@@ -87,15 +87,34 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BookCopyDTO>>> GetBooksAvailableByRFID(string RFIDValues)
+        public async Task<ActionResult<List<BookCopyDTO>>> GetBooksAvailableByRFID(string RFIDValues, string userId)
         {
-            string[] RFIDs = RFIDValues.Split(' ');
+            var reservations = await _wrapper.ReservationRepository.GetAllReservationsByUser(userId);
+            List<string> RFIDs = new List<string>();
+            RFIDs.AddRange(RFIDValues.Split(' '));
             List<BookCopyDTO> books = new List<BookCopyDTO>();
 
             foreach (var item in RFIDs)
             {
-                books.Add(_mapper.Map<BookCopyDTO>(await _wrapper.BookCopyRepository.GetBookCopyByRFID(item)));
+                // If reservation on it get the book
+                if (reservations.Any(r => r.ReservedCopy.RFID == item))
+                {
+                    books.Add(_mapper.Map<BookCopyDTO>(await _wrapper.BookCopyRepository.GetBookCopyByRFID(item)));
+                }
+                else
+                {
+                    var book = _mapper.Map<BookCopyDTO>(await _wrapper.BookCopyRepository.GetAvailableBookCopyByRFID(item));
+
+                    if (book != null)
+                    {
+                        books.Add(book);
+                    }
+                }
+
+
+                RFIDs.Remove(item);
             }
+
 
             return Ok(books);
         }
@@ -161,7 +180,7 @@ namespace Biblio.Server.Controllers
             {
                 try
                 {
-                    books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFID(item));
+                    books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(item));
                 }
                 catch
                 {
@@ -190,6 +209,33 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
+        public async Task<ActionResult> ExtentBorrowPeriodById(int bookCopyId)
+        {
+            // List for all found bookcopies
+            var book = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
+
+            // Serverside check
+            if (book.TimesRerented >= BookCopy.MaxRerents)
+            {
+                return BadRequest("Reached max rerents!");
+            }
+
+            book.ReturnBy = book.ReturnBy?.AddDays(14);
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
         public async Task<ActionResult> RentBooks([FromBody] List<BookCopyDTO> bookCopiesDto)
         {
             var books = _mapper.Map<List<BookCopy>>(bookCopiesDto);
@@ -200,6 +246,91 @@ namespace Biblio.Server.Controllers
                 book.IsAvailable = false;
                 book.BorrowedAt = DateTime.Now;
                 book.ReturnBy = DateTime.Now.AddDays(14);
+
+                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+            }
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> BorrowBooks(string userId, string RFIDValues)
+        {
+            var reservations = await _wrapper.ReservationRepository.GetAllReservationsByUser(userId);
+            var books = new List<BookCopy>();
+
+            foreach (var id in RFIDValues.Split(' '))
+            {
+                books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(id));
+            }
+
+            // Foreach found book set properties for renting purposes
+            foreach (var book in books)
+            {
+                // Check if there was a reservation for the book. If set it for deletion.
+                if (reservations.Any(r => r.ReservedCopyId == book.BookCopyId))
+                {
+                    _wrapper.ReservationRepository.DeleteReservation(reservations.FirstOrDefault(r => r.ReservedCopyId == book.BookCopyId));
+                }
+
+                book.IsAvailable = false;
+                book.BorrowedAt = DateTime.Now;
+                book.ReturnBy = DateTime.Now.AddDays(14);
+                book.BorrowerId = userId;
+
+                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+            }
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> ReturnBooks(string RFIDValues)
+        {
+            var books = new List<BookCopy>();
+
+            foreach (var id in RFIDValues.Split(' '))
+            {
+                books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(id));
+            }
+
+            // Foreach found book set properties for renting purposes
+            foreach (var book in books)
+            {
+                _wrapper.BorrowedBookHistoryRepository.CreateRentedBookHistory(new BorrowedBookHistory()
+                {
+                    BookCopyId = book.BookCopyId,
+                    BorrowedAt = (DateTime)book.BorrowedAt,
+                    ReturnedAt = DateTime.Now,
+                    TimesRerented = (int)book.TimesRerented,
+                    BorrowerId = book.BorrowerId
+                });
+
+                book.IsAvailable = true;
+                book.BorrowedAt = null;
+                book.ReturnBy = null;
+                book.BorrowerId = null;
+                book.TimesRerented = 0;
 
                 _wrapper.BookCopyRepository.UpdateBookCopy(book);
             }

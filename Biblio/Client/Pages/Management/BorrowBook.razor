@@ -1,11 +1,11 @@
-﻿@page "/borrowbook"
+﻿@page "/borrowbooks"
 @using System.Net.Http
 @using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
 @attribute [Authorize(Roles = "LibraryAdmin")]
 
 
-<h3>Loan Book</h3>
+<h3>Borrow Book(s)</h3>
 
 <div>
     <p>
@@ -22,60 +22,83 @@
 }
 <br />
 <p>
-    Input the RFID(s) of the books you want to rent. 
+    Input the RFID(s) of the books you want to borrow then click the button below to see the books in a list below. If the books are correct click the button again to <strong>borrow</strong> them.
+    <br />
     <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
-    <MatButton Disabled="@(appUser != null)" OnClick="@RentHandler" Raised="true">Rent</MatButton>
+    <br />
+    <MatButton Disabled="@(appUser == null)" OnClick="@BorrowHandler" Raised="true">@BorrowHandlerBtnText</MatButton>
 </p>
 <br />
 <br />
 
 @if (bookCopies.Count > 0)
-{   
+{
     <GenericBookList DisplayType="@SharedProperties.DisplayTypes.Table" ViewState="@SharedProperties.ViewState.ShowList" BookType="@SharedProperties.BookTypes.Copy" inputObjectList="@bookCopies" />
 }
 
-<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Rent" />
+<DialogShower @ref="@dialogShower" DialogType="@dialogType" />
 
 @code {
     private List<BookCopyDTO> bookCopies = new List<BookCopyDTO>();
-    private BookCopyDTO bookCopy = new BookCopyDTO();
     private string RFIDs = "";
     private string username = "";
     private ApplicationUserDTO appUser = null;
     private DialogShower dialogShower;
+    private DialogShower.DialogTypes dialogType = DialogShower.DialogTypes.Borrow;
 
-    private string RentHandlerBtnText
+    private string BorrowHandlerBtnText
     {
         get
         {
-            return bookCopies.Count > 0 ? "Rent books" : "Get books";
+            return bookCopies.Count > 0 ? "Borrow books" : "Get books";
         }
     }
 
-    private async void RentHandler()
+    private async void BorrowHandler()
     {
         // If book list is empty no book are set up for renting. Get books by the RFID.
         if (bookCopies.Count <= 0)
         {
             // Get books
-            bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetBooksAvailableByRFID?RFIDs={ RFIDs }");
+            bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetBooksAvailableByRFID?RFIDValues={ RFIDs }&username={ username }");
+
+            EvalCopies();
         }
         else // Book list not empty books are set for renting. Rent them for the user.
         {
+            dialogType = DialogShower.DialogTypes.Borrow;
+
             // Set borrowerId on all books
-            foreach (var book in bookCopies)
+                foreach (var book in bookCopies)
             {
                 book.BorrowerId = appUser.Id;
             }
 
             // Call endpoint with list of books to rent.
-            var response = await Http.PutAsJsonAsync<List<BookCopyDTO>>($"api/BookCopies/RentBooks", bookCopies);
+            var response = await Http.PutAsync($"api/BookCopies/BorrowBooks?userId={ appUser.Id }&RFIDValues={ RFIDs }", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                bookCopies.Clear();
+                RFIDs = "";
+                username = "";
+                appUser = null;
+            }
 
             // Show dialog with results.
             dialogShower.HandleDialog(response.IsSuccessStatusCode);
         }
 
         base.StateHasChanged();
+    }
+
+    private void EvalCopies()
+    {
+        if (bookCopies.Count < RFIDs.Split(' ').Count())
+        {
+            dialogType = DialogShower.DialogTypes.UnAvailable;
+            dialogShower.HandleDialog(false);
+        }
     }
 
     private async Task SearchUser()

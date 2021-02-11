@@ -1,5 +1,44 @@
-﻿<h3>ReturnBook</h3>
+﻿@page "/returnbooks"
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient Http
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+
+<h3>Return Book(s)</h3>
+
+<br />
+<p>
+    Input the RFID(s) of the books you want to return then click the button to <strong>return</strong> them.
+    For multiple books use a space between the RFIDs.
+    <br />
+    <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+    <br />
+    <MatButton OnClick="@ReturnHandler" Raised="true">Return</MatButton>
+</p>
+<br />
+<br />
+
+<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Return" />
 
 @code {
+    private string RFIDs = "";
+    private string username = "";
+    private DialogShower dialogShower;
 
+    private async void ReturnHandler()
+    {
+        // Call endpoint with list of books to rent.
+        var response = await Http.PutAsync($"api/BookCopies/ReturnBooks?RFIDValues={ RFIDs }", null);
+
+        // Show dialog with results.
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        if (response.IsSuccessStatusCode)
+        {
+            RFIDs = "";
+        }
+
+        base.StateHasChanged();
+    }
 }

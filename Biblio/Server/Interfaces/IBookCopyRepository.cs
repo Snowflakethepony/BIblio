@@ -16,6 +16,8 @@ namespace Biblio.Server.Interfaces
         Task<IEnumerable<BookCopy>> GetAllBookCopiesByAuthor(string author);
         Task<IEnumerable<BookCopy>> GetAllBookCopiesByGenre(string genre);
         Task<BookCopy> GetBookCopyByRFID(string RFID);
+        Task<BookCopy> GetAvailableBookCopyByRFID(string RFID);
+        Task<BookCopy> GetBookCopyByRFIDNoRelations(string RFID);
         Task<IEnumerable<BookCopy>> GetAllBookCopiesForUser(string userId);
         Task<BookCopy> GetBookCopyById(int bookCopyId);
         Task<BookCopy> GetBookCopyByIdIncludingRelation(int bookCopyId);
