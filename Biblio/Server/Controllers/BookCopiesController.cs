@@ -3,6 +3,7 @@ using Biblio.Server.Interfaces;
 using Biblio.Shared.Models;
 using Biblio.Shared.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,17 +19,21 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _usermanager;
 
-        public BookCopiesController(IRepositoryWrapper wrapper, IMapper mapper)
+        public BookCopiesController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;
+            this._usermanager = userManager;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BookCopyDTO>>> GetAllBookCopiesForUser(string userId)
+        public async Task<ActionResult<List<BookCopyDTO>>> GetAllBookCopiesForUser(string username)
         {
-            return Ok(_mapper.Map<List<BookCopyDTO>>(await _wrapper.BookCopyRepository.GetAllBookCopiesForUser(userId)));
+            var user = await _usermanager.FindByNameAsync(username);
+
+            return Ok(_mapper.Map<List<BookCopyDTO>>(await _wrapper.BookCopyRepository.GetAllBookCopiesForUser(user.Id)));
         }
 
         [HttpGet]
@@ -81,6 +86,20 @@ namespace Biblio.Server.Controllers
             return Ok(_mapper.Map<List<BookCopyDTO>>(await _wrapper.BookCopyRepository.GetAllBookCopiesReturnOverdueForLibrary(libraryId)));
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<BookCopyDTO>>> GetBooksAvailableByRFID(string RFIDValues)
+        {
+            string[] RFIDs = RFIDValues.Split(' ');
+            List<BookCopyDTO> books = new List<BookCopyDTO>();
+
+            foreach (var item in RFIDs)
+            {
+                books.Add(_mapper.Map<BookCopyDTO>(await _wrapper.BookCopyRepository.GetBookCopyByRFID(item)));
+            }
+
+            return Ok(books);
+        }
+
         [HttpPost]
         public async Task<ActionResult<BookCopyDTO>> CreateBookCopy([FromBody] BookCopyDTO bookCopy)
         {
@@ -123,6 +142,76 @@ namespace Biblio.Server.Controllers
                 {
                     return BadRequest(e.Message);
                 }
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateBooksAvailableByRFID(string RFIDValues)
+        {
+            // Split RFIDs
+            string[] RFIDs = RFIDValues.Split(' ');
+
+            // List for all found bookcopies
+            List<BookCopy> books = new List<BookCopy>();
+
+            // Forech ID find the assosiated bookcopy
+            foreach (var item in RFIDs)
+            {
+                try
+                {
+                    books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFID(item));
+                }
+                catch
+                {
+
+                }
+            }
+
+            // Foreach found book set not available
+            foreach (var book in books)
+            {
+                book.IsAvailable = false;
+                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+            }
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> RentBooks([FromBody] List<BookCopyDTO> bookCopiesDto)
+        {
+            var books = _mapper.Map<List<BookCopy>>(bookCopiesDto);
+
+            // Foreach found book set properties for renting purposes
+            foreach (var book in books)
+            {
+                book.IsAvailable = false;
+                book.BorrowedAt = DateTime.Now;
+                book.ReturnBy = DateTime.Now.AddDays(14);
+
+                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+            }
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
             }
 
             return Ok();

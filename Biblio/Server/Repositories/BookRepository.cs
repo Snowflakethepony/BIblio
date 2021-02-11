@@ -56,7 +56,8 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<Book>> SearchBooksByTitle(string title)
         {
-            return await FindBySqlLike(nameof(Book), nameof(Book.Title), title).Include(b => b.Authors).Include(b => b.Genres).ToListAsync();
+            var model = typeof(Book);
+            return await FindBySqlLike(model.FullName + ", " + model.Assembly.FullName, nameof(Book.Title), title).Include(b => b.Authors).Include(b => b.Genres).ToListAsync();
         }
 
         public void UpdateBook(Book book)

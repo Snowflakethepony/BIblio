@@ -29,13 +29,13 @@ namespace Biblio.Server.Repositories
                 .Where(expression).AsNoTracking();
         }
 
-        public IQueryable<T> FindBySqlLike(string model, string property, string query)
+        public IQueryable<T> FindBySqlLike(string modelAssembly, string property, string query)
         {
             // Get the property
-            var modelType = Type.GetType(model);
-            var modelProp = Type.GetType(modelType.FullName + ", " + modelType.Assembly.FullName).GetProperty(property);
+            var modelProp = Type.GetType(modelAssembly).GetProperty(property);
 
-            return from a in this.DbContext.Set<T>().AsNoTracking() where EF.Functions.Like(modelProp.Name, query) select a;
+            var t = from a in this.DbContext.Set<T>().AsNoTracking() where EF.Functions.Contains(modelProp.Name, query) select a;
+            return t;
         }
 
         public void Create(T entity)

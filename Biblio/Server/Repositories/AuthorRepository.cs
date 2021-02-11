@@ -41,7 +41,8 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<Author>> GetAuthorsByPseudonym(string pseudonym)
         {
-            return await FindBySqlLike(nameof(Author), nameof(Author.Pseudonym), pseudonym).ToListAsync();
+            var model = typeof(Author);
+            return await FindBySqlLike(model.FullName + ", " + model.Assembly.FullName, nameof(Author.Pseudonym), pseudonym).ToListAsync();
         }
 
         public void UpdateAuthor(Author author)

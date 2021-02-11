@@ -41,7 +41,7 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<BookCopy>> GetAllBookCopiesForUser(string userId)
         {
-            return await FindByCondition(bc => bc.BorrowerId == userId).Include(bc => bc.OriginLibrary).Include(bc => bc.CurrentLibrary).ToListAsync();
+            return await FindByCondition(bc => bc.BorrowerId == userId).Include(bc => bc.OriginLibrary).Include(bc => bc.CurrentLibrary).Include(bc => bc.Book).ToListAsync();
         }
 
         public async Task<IEnumerable<BookCopy>> GetAllBookCopiesByBookTitle(string title)

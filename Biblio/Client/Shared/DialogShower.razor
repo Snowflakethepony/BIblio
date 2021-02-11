@@ -12,15 +12,18 @@
 </div>
 
 @code {
-        /// <summary>
-        /// Types that define the Dialog type to show a user.
-        /// Messages will be based on this type.
-        /// </summary>
+    /// <summary>
+    /// Types that define the Dialog type to show a user.
+    /// Messages will be based on this type.
+    /// </summary>
     public enum DialogTypes
     {
         ReservationMade,
         ReservationDel,
-        Edit
+        Edit,
+        Rent,
+        Home,
+        Extent
     }
 
     [Parameter]
@@ -60,6 +63,15 @@
                 break;
             case DialogTypes.Edit:
                 message = isSuccess ? "Successfully updated listing" : "Failed to update listing. Please try again later.";
+                break;
+            case DialogTypes.Rent:
+                message = isSuccess ? "Successfully loaned the book(s)" : "Failed to loan the book(s). Please try again later.";
+                break;
+            case DialogTypes.Home:
+                message = isSuccess ? "Successfully changed home library" : "Failed to change home library. Please try again later.";
+                break;
+            case DialogTypes.Extent:
+                message = isSuccess ? "Successfully extented borrowing period" : "Failed to extent borrowing period. Please try again later.";
                 break;
             default:
                 break;

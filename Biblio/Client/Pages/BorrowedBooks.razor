@@ -1,0 +1,31 @@
+﻿@page "/borrowedbooks"
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+
+<h3>Borrowed Books</h3>
+<p>
+    Here you can see your current borrowed books. You can extent the borrowing period if it close to the return date. You can only extent a period up to 3 times.
+    To extent the period click "Details" on the borrowed wanted to do so on. 
+</p>
+
+<div>
+    <GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" ViewState="@SharedProperties.ViewState.ShowList" IsBorrowedBooks="true" inputObjectList="@borrowedBooks" />
+</div>
+
+@code {
+    private List<BookCopyDTO> borrowedBooks = new List<BookCopyDTO>();
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Set username.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        // Get
+        borrowedBooks = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesForUser?username={ authState.User.Identity.Name }");
+    }
+}

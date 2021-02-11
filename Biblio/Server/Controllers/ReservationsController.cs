@@ -79,6 +79,10 @@ namespace Biblio.Server.Controllers
                 ReservedCopyId = bookCopy.BookCopyId
             };
 
+            // Set book to unavailable
+            bookCopy.IsAvailable = false;
+
+            _wrapper.BookCopyRepository.UpdateBookCopy(_mapper.Map<BookCopy>(bookCopy));
             _wrapper.ReservationRepository.CreateReservation(reservation);
 
             try
@@ -131,8 +135,16 @@ namespace Biblio.Server.Controllers
             {
                 return NotFound();
             }
+            else
+            {
+                var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(reservation.ReservedCopyId);
+                bookCopy.IsAvailable = true;
 
-            _wrapper.ReservationRepository.DeleteReservation(reservation);
+                _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
+                _wrapper.ReservationRepository.DeleteReservation(reservation);
+            }
+
+            
 
             try
             {
@@ -155,12 +167,19 @@ namespace Biblio.Server.Controllers
             // Look for existing reservation.
             var reservation = await _wrapper.ReservationRepository.GetReservationForUserByBookCipyId(username, bookCopyId);
 
-            if (reservation == null)
+            var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
+
+            if (reservation == null || bookCopy != null)
             {
                 return NotFound();
             }
+            else
+            {
+                bookCopy.IsAvailable = false;
 
-            _wrapper.ReservationRepository.DeleteReservation(reservation);
+                _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
+                _wrapper.ReservationRepository.DeleteReservation(reservation);
+            }
 
             try
             {

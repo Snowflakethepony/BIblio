@@ -44,7 +44,13 @@ else
                 @*TODO: Should make this into a variable that is set doing startup of the component based on input object. *@
                 @if (bookType == SharedProperties.BookTypes.Copy)
                 {
-                    <MatButton Disabled="@(!bookCopy.IsAvailable)" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                    if (isBorrwedByUser)
+                    {
+                        <MatButton Raised="true" OnClick="@ExtentPeriodHandler">@ExtentBtnText</MatButton>
+                    } else
+                    {
+                        <MatButton Disabled="@reserveButtonBool" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                    }
                 }
             </AuthorizeView>
             <AuthorizeView Roles="SiteAdministrator, LibraryAdmin">
@@ -56,6 +62,7 @@ else
         <hr />
         <br />
         <div>
+            <DialogShower DialogType="@dialogType" />
             <MatDialog @bind-IsOpen="@dialogIsOpen">
                 <MatDialogTitle>@title</MatDialogTitle>
                 <MatDialogContent>
@@ -90,13 +97,50 @@ else
     private string message; // Message of the dialog
     private bool isEditingListing = false;
     private bool isReservedByUser;
+    private bool isBorrwedByUser;
     private BookCopyDTO bookCopy = null;
+    private DialogShower dialogShower;
+    private DialogShower.DialogTypes dialogType;
 
     private string ReserveBookHandlerBtnText
     {
         get
         {
             return isReservedByUser ? "Delete Reservation" : "Reserve Book";
+        }
+    }
+
+    private string ExtentBtnText
+    {
+        get
+        {
+            return (bookCopy.ReturnBy - DateTime.Now)?.TotalDays < 2  ? "Extent Period" : "Can't extent";
+        }
+    }
+
+    private bool isServedorBorrewed
+    {
+        get
+        {
+            // If copy is reserve by user button must be active-
+            if (isReservedByUser)
+                return false;
+
+            // Set button active based on its availability.
+            return bookCopy.IsAvailable ? false : true;
+        }
+    }
+
+    private bool reserveButtonBool
+    {
+        get
+        {
+            // If copy is reserve by user button must be active-
+            if (isReservedByUser)
+                return false;
+
+            // Set button active based on its availability.
+            return bookCopy.IsAvailable ? false : true;
         }
     }
 
@@ -126,7 +170,18 @@ else
                 break;
             case SharedProperties.BookTypes.Copy:
                 bookCopy = (BookCopyDTO)inputObject;
-                isReservedByUser = await Http.GetFromJsonAsync<bool>($"api/Reservations/IsBookCopyReservedByUser?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+
+                if (bookCopy.BorrowerId != null)
+                {
+                    var user = await Http.GetFromJsonAsync<ApplicationUserDTO>($"api/AppUser/GetApplicationUserByUsername?username={ username }");
+
+                    isBorrwedByUser = user.Id == bookCopy.BorrowerId ? true : false;
+                }
+                else
+                {
+                    isReservedByUser = await Http.GetFromJsonAsync<bool>($"api/Reservations/IsBookCopyReservedByUser?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+                }
+
                 break;
             default:
                 break;
@@ -155,6 +210,15 @@ else
         }
 
         HandleDialog(response.IsSuccessStatusCode, DialogTypes.Reserved);
+        UpdateUI();
+    }
+
+    private async void ExtentPeriodHandler(MouseEventArgs e)
+    {
+        var response = await Http.DeleteAsync($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+
+        dialogType = DialogShower.DialogTypes.Extent;
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
     }
 
     /// <summary>

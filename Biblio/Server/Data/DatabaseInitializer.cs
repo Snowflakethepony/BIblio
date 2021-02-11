@@ -80,7 +80,7 @@ namespace Biblio.Server.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             // Roles
-            string[] roleNames = { "SiteAdministrator", "AppUser", "LibaryAdmin", "SvenstrupLibrary" };
+            string[] roleNames = { "SiteAdministrator", "AppUser", "LibraryAdmin", "SvenstrupLibrary" };
             //IdentityResult roleResult;
 
             // Loop through each initial role and create it.

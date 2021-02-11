@@ -27,7 +27,7 @@ namespace Biblio.Server.Interfaces
         /// <param name="property">Property name to aply LIKE statement on.</param>
         /// <param name="query">The value property must be LIKE.</param>
         /// <returns></returns>
-        IQueryable<T> FindBySqlLike(string model, string property, string query);
+        IQueryable<T> FindBySqlLike(string modelAssembly, string property, string query);
         /// <summary>
         /// Find a SQL row by primarykey.
         /// </summary>

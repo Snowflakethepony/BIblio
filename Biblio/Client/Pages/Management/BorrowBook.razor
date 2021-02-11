@@ -1,0 +1,92 @@
+﻿@page "/borrowbook"
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@inject HttpClient Http
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+
+<h3>Loan Book</h3>
+
+<div>
+    <p>
+        <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" />
+    </p>
+    <p>
+        <MatButton OnClick="@SearchUser" Raised="true">Search for user</MatButton>
+    </p>
+</div>
+<br />
+@if (appUser != null)
+{
+    <p>Found user with name: @appUser.FullName</p>
+}
+<br />
+<p>
+    Input the RFID(s) of the books you want to rent. 
+    <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+    <MatButton Disabled="@(appUser != null)" OnClick="@RentHandler" Raised="true">Rent</MatButton>
+</p>
+<br />
+<br />
+
+@if (bookCopies.Count > 0)
+{   
+    <GenericBookList DisplayType="@SharedProperties.DisplayTypes.Table" ViewState="@SharedProperties.ViewState.ShowList" BookType="@SharedProperties.BookTypes.Copy" inputObjectList="@bookCopies" />
+}
+
+<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Rent" />
+
+@code {
+    private List<BookCopyDTO> bookCopies = new List<BookCopyDTO>();
+    private BookCopyDTO bookCopy = new BookCopyDTO();
+    private string RFIDs = "";
+    private string username = "";
+    private ApplicationUserDTO appUser = null;
+    private DialogShower dialogShower;
+
+    private string RentHandlerBtnText
+    {
+        get
+        {
+            return bookCopies.Count > 0 ? "Rent books" : "Get books";
+        }
+    }
+
+    private async void RentHandler()
+    {
+        // If book list is empty no book are set up for renting. Get books by the RFID.
+        if (bookCopies.Count <= 0)
+        {
+            // Get books
+            bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetBooksAvailableByRFID?RFIDs={ RFIDs }");
+        }
+        else // Book list not empty books are set for renting. Rent them for the user.
+        {
+            // Set borrowerId on all books
+            foreach (var book in bookCopies)
+            {
+                book.BorrowerId = appUser.Id;
+            }
+
+            // Call endpoint with list of books to rent.
+            var response = await Http.PutAsJsonAsync<List<BookCopyDTO>>($"api/BookCopies/RentBooks", bookCopies);
+
+            // Show dialog with results.
+            dialogShower.HandleDialog(response.IsSuccessStatusCode);
+        }
+
+        base.StateHasChanged();
+    }
+
+    private async Task SearchUser()
+    {
+        if (!string.IsNullOrEmpty(username))
+        {
+            appUser = await Http.GetFromJsonAsync<ApplicationUserDTO>($"api/AppUser/GetApplicationUserByUsername?username={ username }");
+        }
+
+        base.StateHasChanged();
+    }
+
+
+}

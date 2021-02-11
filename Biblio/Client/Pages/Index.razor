@@ -1,27 +1,24 @@
 ﻿@page "/"
-@inject HttpClient Http
 
-<h1>Hello, world!</h1>
+<AuthorizeView>
+    <Authorized>
+        <h1>Welcome back!</h1>
 
-Welcome to your new app.
+        <p>
+            
+        </p>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hello!</h1>
 
-<GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" ViewState="SharedProperties.ViewState.ShowList" inputObjectList="@bookCopyList" OnDetailClick="@noting"></GenericBookList>
+        <p>
+            Welcome to the central library website! Here you can reserve books from libraries all over Denmark.
+            To start renting books you must create an account and visit your local Library to enable it as your home library.
+            Following that you can reserve book online here, manage your reservation, see your current rented books and contact libraries.
+        </p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private List<BookCopyDTO> bookCopyList = new List<BookCopyDTO>();
 
-    /// <summary>
-    /// Component startup procedure.
-    /// </summary>
-    protected override async Task OnInitializedAsync()
-    {
-        Console.WriteLine("INDEX");
-        bookCopyList = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesByBookId?bookId={ 1 }");
-        Console.WriteLine(bookCopyList);
-    }
-
-    public void noting()
-    {
-
-    }
 } 

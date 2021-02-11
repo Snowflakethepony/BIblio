@@ -68,11 +68,11 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateUserLibrary(string username, int librayId)
+        public async Task<ActionResult> UpdateUserLibrary(string username, int libraryId)
         {
             var user = await _usermanager.FindByNameAsync(username);
 
-            user.HomeLibraryId = librayId;
+            user.HomeLibraryId = libraryId;
 
             _wrapper.AppUserRepository.UpdateAppUser(user);
 

@@ -26,8 +26,8 @@ namespace Biblio.Shared.Models.DTOs
         public int BookId { get; set; }
         public BookDTO Book { get; set; }
 
-        public string ApplicationUserId { get; set; }
-        public ApplicationUserDTOMinusRelations Renter { get; set; }
+        public string BorrowerId { get; set; }
+        public ApplicationUserDTOMinusRelations Borrower { get; set; }
 
         public int OriginLibraryId { get; set; }
         public LibraryDTOMinusRelations OriginLibrary { get; set; }

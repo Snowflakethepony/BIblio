@@ -23,8 +23,19 @@ else
                                         @bookCopy.Book.Title
                                     </MatHeadline6>
                                     <MatSubtitle2 class="demo-mat-card-clean-margin">
-                                        Library: @bookCopy.OriginLibrary.Name
-                                        Available: @bookCopy.IsAvailable
+                                        @if (IsBorrowedBooks)
+                                        {
+                                            <p>
+                                                Return Date: @bookCopy.ReturnBy
+                                                Reborrow available: @(bookCopy.TimesRerented <= 3 ? "Yes" : "No")
+                                            </p>
+                                        } else
+                                        {
+                                            <p>
+                                                Library: @bookCopy.OriginLibrary.Name
+                                                Available: @bookCopy.IsAvailable
+                                            </p>
+                                        }
                                     </MatSubtitle2>
                                 </div>
 
@@ -101,6 +112,9 @@ else
 
     [Parameter]
     public bool IsAdminFindPage { get; set; }
+
+    [Parameter]
+    public bool IsBorrowedBooks { get; set; } = false;
 
     private string GetImageUrl(BookDTO bookDTO)
     {

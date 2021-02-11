@@ -36,7 +36,16 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<Library>> GetLibrariesByName(string name)
         {
-            return await FindBySqlLike(typeof(Library).ToString(), nameof(Library.Name), name).ToListAsync();
+            try
+            {
+                //var model = typeof(Library);
+                //return await FindBySqlLike(model.FullName + "," + model.Assembly.FullName, nameof(Library.Name), name).ToListAsync();
+                return await FindByCondition(l => l.Name.ToUpper().Contains(name.ToUpper())).ToListAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public void UpdateLibrary(Library library)
@@ -46,7 +55,7 @@ namespace Biblio.Server.Repositories
 
         public async Task<Shared.Models.Library> GetLibraryByName(string name)
         {
-            return await FindByCondition(l => l.Name.ToUpper() == name.ToUpper()).SingleOrDefaultAsync();
+            return await FindByCondition(l => l.Name.ToUpper().Contains(name.ToUpper())).SingleOrDefaultAsync();
         }
     }
 }

@@ -33,11 +33,7 @@ namespace Biblio.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<LibraryDTOMinusRelations>> GetLibrayByName(string name)
         {
-            var t = typeof(Library);
-            var t2 = Type.GetType(t.FullName + ", " + typeof(Library).Assembly.FullName);
-            var t3 = t.GetProperty("Name");
-
-            return Ok(_mapper.Map<LibraryDTOMinusRelations>(await _wrapper.LibraryRepository.GetLibrariesByName(name)));
+            return Ok(_mapper.Map<LibraryDTOMinusRelations>(await _wrapper.LibraryRepository.GetLibraryByName(name)));
         }
     }
 }

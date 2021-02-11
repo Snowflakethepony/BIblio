@@ -22,7 +22,7 @@
                 <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" books="@((List<BookDTO>)inputObjectList)" />
                 break;
             case SharedProperties.BookTypes.Copy:
-                <Biblio.Client.Shared.Markup.BookCopyListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" IsAdminFindPage="@IsAdminFindPage" />
+                <Biblio.Client.Shared.Markup.BookCopyListMarkup IsBorrowedBooks="@IsBorrowedBooks" DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" IsAdminFindPage="@IsAdminFindPage" />
                 break;
             default:
                 break;
@@ -51,6 +51,9 @@
 
     [Parameter]
     public bool IsAdminFindPage { get; set; } = false;
+
+    [Parameter]
+    public bool IsBorrowedBooks { get; set; } = false;
 
     private object detailsObject;
 
