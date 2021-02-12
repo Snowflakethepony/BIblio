@@ -77,7 +77,7 @@ namespace Biblio.Server.Data
 
             // Get role and user manager.
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
 
             // Roles
             string[] roleNames = { "SiteAdministrator", "AppUser", "LibraryAdmin", "SvenstrupLibrary" };
@@ -99,7 +99,7 @@ namespace Biblio.Server.Data
             if (await userManager.FindByNameAsync("Admin") == null)
             {
                 // Assemble admin user.
-                var adminUser = new ApplicationUser
+                var adminUser = new AppUser
                 {
                     UserName = "Admin@dennishk.dk",
                     Email = "Admin@dennishk.dk",

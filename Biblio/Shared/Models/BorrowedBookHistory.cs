@@ -17,7 +17,7 @@ namespace Biblio.Shared.Models
         // Relations
         [ForeignKey("Id")]
         public string BorrowerId { get; set; }
-        public ApplicationUser Borrower { get; set; }
+        public AppUser Borrower { get; set; }
 
         [ForeignKey("BookCopyId")]
         public int BookCopyId { get; set; }

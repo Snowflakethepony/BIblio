@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Biblio.Server.Data
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext : ApiAuthorizationDbContext<AppUser>
     {
         public ApplicationDbContext(
             DbContextOptions options,
@@ -23,7 +23,7 @@ namespace Biblio.Server.Data
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<BorrowedBookHistory> BorrowedBookHistories { get; set; }
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Library> Libraries { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
 

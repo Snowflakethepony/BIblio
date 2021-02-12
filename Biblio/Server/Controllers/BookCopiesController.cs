@@ -19,9 +19,9 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> _usermanager;
+        private readonly UserManager<AppUser> _usermanager;
 
-        public BookCopiesController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public BookCopiesController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<AppUser> userManager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;

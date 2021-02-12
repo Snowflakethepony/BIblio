@@ -28,6 +28,6 @@ namespace Biblio.Shared.Models
 
         [ForeignKey("ApplicationUserId")]
         public string ReservedById { get; set; }
-        public ApplicationUser ReservedBy { get; set; }
+        public AppUser ReservedBy { get; set; }
     }
 }

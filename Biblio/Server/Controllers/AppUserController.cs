@@ -19,9 +19,9 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> _usermanager;
+        private readonly UserManager<AppUser> _usermanager;
 
-        public AppUserController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<ApplicationUser> usermanager)
+        public AppUserController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<AppUser> usermanager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;
@@ -96,7 +96,7 @@ namespace Biblio.Server.Controllers
                 return BadRequest();
             }
 
-            _wrapper.AppUserRepository.UpdateAppUser(_mapper.Map<ApplicationUser>(appUser));
+            _wrapper.AppUserRepository.UpdateAppUser(_mapper.Map<AppUser>(appUser));
 
             try
             {

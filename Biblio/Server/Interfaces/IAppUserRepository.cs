@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Biblio.Server.Interfaces
 {
-    public interface IAppUserRepository : IRepositoryBase<ApplicationUser>
+    public interface IAppUserRepository : IRepositoryBase<AppUser>
     {
-        Task<List<ApplicationUser>> GetAllApplicationUsersByLibrary(int libraryId);
-        Task<ApplicationUser> GetApplicationUserById(string id);
-        Task<ApplicationUser> GetApplicationUserByBookId(int bookCopyId);
-        Task<ApplicationUser> GetApplicationUserByUsername(string username);
-        void UpdateAppUser(ApplicationUser appUser);
+        Task<List<AppUser>> GetAllApplicationUsersByLibrary(int libraryId);
+        Task<AppUser> GetApplicationUserById(string id);
+        Task<AppUser> GetApplicationUserByBookId(int bookCopyId);
+        Task<AppUser> GetApplicationUserByUsername(string username);
+        void UpdateAppUser(AppUser appUser);
     }
 }

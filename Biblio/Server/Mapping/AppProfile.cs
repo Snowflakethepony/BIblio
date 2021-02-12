@@ -13,11 +13,11 @@ namespace Biblio.Server.Mapping
         public AppProfile()
         {
             // ApplicationUser mappings
-            CreateMap<ApplicationUser, ApplicationUserDTO>();
-            CreateMap<ApplicationUserDTO, ApplicationUser>();
+            CreateMap<AppUser, ApplicationUserDTO>();
+            CreateMap<ApplicationUserDTO, AppUser>();
 
-            CreateMap<ApplicationUser, ApplicationUserDTOMinusRelations>();
-            CreateMap<ApplicationUserDTOMinusRelations, ApplicationUser>();
+            CreateMap<AppUser, ApplicationUserDTOMinusRelations>();
+            CreateMap<ApplicationUserDTOMinusRelations, AppUser>();
 
             // Author mappings
             CreateMap<Author, AuthorDTO>();
