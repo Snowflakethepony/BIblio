@@ -19,10 +19,10 @@
         @switch (BookType)
         {
             case SharedProperties.BookTypes.Book:
-                <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" books="@((List<BookDTO>)inputObjectList)" />
+                <Biblio.Client.Shared.Markup.BookListMarkup DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" books="@((List<BookDTO>)inputObjectList)" />
                 break;
             case SharedProperties.BookTypes.Copy:
-                <Biblio.Client.Shared.Markup.BookCopyListMarkup IsBorrowedBooks="@IsBorrowedBooks" DisplayType="@DisplayType" OnDetailClick="@OnDetailClick2" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" IsAdminFindPage="@IsAdminFindPage" />
+                <Biblio.Client.Shared.Markup.BookCopyListMarkup IsBorrowedBooks="@IsBorrowedBooks" DisplayType="@DisplayType" OnDetailClick="@OnDetailClick" SelectionChangedEvent="@SelectionChangedEvent" bookCopies="@((List<BookCopyDTO>)inputObjectList)" IsAdminFindPage="@IsAdminFindPage" />
                 break;
             default:
                 break;
@@ -44,7 +44,7 @@
     public SharedProperties.BookTypes BookType { get; set; }
 
     [Parameter]
-    public EventCallback<object> OnDetailClick { get; set; }
+    public EventCallback<object> SideHandler { get; set; }
 
     [Parameter]
     public SharedProperties.ViewState ViewState { get; set; } = SharedProperties.ViewState.ShowDetails;
@@ -57,7 +57,7 @@
 
     private object detailsObject;
 
-    private void OnDetailClick2(object o)
+    private void OnDetailClick(object o)
     {
         detailsObject = o;
         ViewState = SharedProperties.ViewState.ShowDetails;
@@ -79,23 +79,7 @@
         }
         else
         {
-            //switch (BookType)
-            //{
-            //    case SharedProperties.BookTypes.Book:
-            //        var book = row as BookDTO;
-            //        //OnDetailClick.InvokeAsync(book);
-            //        OnDetailClick2(row);
-            //        break;
-            //    case SharedProperties.BookTypes.Copy:
-            //        var bookCopy = row as BookCopyDTO;
-            //        //OnDetailClick.InvokeAsync(bookCopy);
-            //        OnDetailClick2(row);
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-            OnDetailClick2(row);
+            OnDetailClick(row);
         }
 
     }
