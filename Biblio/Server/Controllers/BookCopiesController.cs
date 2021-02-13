@@ -110,9 +110,6 @@ namespace Biblio.Server.Controllers
                         books.Add(book);
                     }
                 }
-
-
-                RFIDs.Remove(item);
             }
 
 

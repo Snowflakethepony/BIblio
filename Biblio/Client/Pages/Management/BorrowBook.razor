@@ -60,7 +60,7 @@
         if (bookCopies.Count <= 0)
         {
             // Get books
-            bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetBooksAvailableByRFID?RFIDValues={ RFIDs }&username={ username }");
+            bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetBooksAvailableByRFID?RFIDValues={ RFIDs }&userId={ appUser.Id }");
 
             EvalCopies();
         }
