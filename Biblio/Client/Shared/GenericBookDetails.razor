@@ -24,7 +24,7 @@
 }
 else
 {
-    <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnbackClick.InvokeAsync(null))" Label="Back"></MatButton>
+    <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnbackClick.InvokeAsync(inputObject))" Label="Back"></MatButton>
 
     <div class="movieDetail">
         @switch (bookType)
@@ -46,7 +46,7 @@ else
                 {
                     if (isBorrwedByUser)
                     {
-                        <MatButton Raised="true" OnClick="@ExtentPeriodHandler">@ExtentBtnText</MatButton>
+                        <MatButton Disabled="@(!CanExtent)" Raised="true" OnClick="@ExtentPeriodHandler">@ExtentBtnText</MatButton>
                     } else
                     {
                         <MatButton Disabled="@reserveButtonBool" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
@@ -62,7 +62,7 @@ else
         <hr />
         <br />
         <div>
-            <DialogShower DialogType="@dialogType" />
+            <DialogShower @ref="@dialogShower" DialogType="@dialogType" />
             <MatDialog @bind-IsOpen="@dialogIsOpen">
                 <MatDialogTitle>@title</MatDialogTitle>
                 <MatDialogContent>
@@ -86,7 +86,7 @@ else
     public SharedProperties.BookTypes bookType { get; set; }
 
     [Parameter]
-    public EventCallback OnbackClick { get; set; }
+    public EventCallback<object> OnbackClick { get; set; }
 
     [Parameter]
     public object inputObject { get; set; }
@@ -114,7 +114,20 @@ else
     {
         get
         {
-            return (bookCopy.ReturnBy - DateTime.Now)?.TotalDays < 2  ? "Extent Period" : "Can't extent";
+            return CanExtent ? "Extent Period" : "Can't extent";
+        }
+    }
+
+    private bool CanExtent
+    {
+        get
+        {
+            if (bookCopy.TimesRerented == 3)
+            {
+                return false;
+            }
+
+            return (bookCopy.ReturnBy - DateTime.Now)?.TotalDays < 2 ? true : false;
         }
     }
 
@@ -201,7 +214,7 @@ else
         }
         else
         {
-            response = await Http.PostAsJsonAsync<BookCopyDTO>($"api/Reservations/CreateReservationFromDto?username={ username }", bookCopy);
+            response = await Http.PostAsJsonAsync<BookCopyDTO>($"api/Reservations/CreateReservationByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
         }
 
         if (response.IsSuccessStatusCode)
@@ -217,7 +230,12 @@ else
     {
         var response = await Http.PutAsync($"api/BookCopies/ExtentBorrowPeriodById?bookCopyId={ bookCopy.BookCopyId }", null);
 
+        var newPeriod = await response.Content.ReadFromJsonAsync<DateTime>();
+
+        ((BookCopyDTO)inputObject).ReturnBy = newPeriod;
+
         dialogType = DialogShower.DialogTypes.Extent;
+        dialogShower.DialogType = DialogShower.DialogTypes.Extent;
         dialogShower.HandleDialog(response.IsSuccessStatusCode);
     }
 

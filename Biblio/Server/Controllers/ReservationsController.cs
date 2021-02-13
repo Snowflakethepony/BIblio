@@ -63,16 +63,17 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReservationDTO>> CreateReservationFromDto(string username, [FromBody] BookCopyDTO bookCopy)
+        public async Task<ActionResult<ReservationDTO>> CreateReservationByBookCopyId(string username, int bookCopyId)
         {
             var user = await _usermanager.FindByNameAsync(username);
+            var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
 
             var isForeign = !(user.HomeLibraryId == bookCopy.OriginLibraryId);
 
             var reservation = new Reservation()
             {
                 IsForeignBorrower = isForeign,
-                ExpirationDate = isForeign ? new DateTime().AddDays(7) : null,
+                ExpirationDate = isForeign ? null : DateTime.Now.AddDays(3),
                 LibraryId = bookCopy.OriginLibraryId,
                 ReservedAt = DateTime.Now,
                 ReservedById = user.Id,
@@ -94,7 +95,7 @@ namespace Biblio.Server.Controllers
                 return BadRequest(e.Message);
             }
 
-            return CreatedAtAction(nameof(CreateReservationFromDto), new { id = reservation.ReservationId }, _mapper.Map<ReservationDTO>(reservation));
+            return CreatedAtAction(nameof(CreateReservationByBookCopyId), new { id = reservation.ReservationId }, _mapper.Map<ReservationDTO>(reservation));
         }
 
         [HttpPut]

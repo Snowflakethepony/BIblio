@@ -1,5 +1,66 @@
-﻿<h3>CheckinBook</h3>
+﻿@page "/checkinbooks"
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using System.Text.RegularExpressions
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+
+<h3>Checkin Book(s)</h3>
+
+<br />
+<p>
+    Input the RFID(s) of the books you want to checkin then click the button to <strong>check</strong> them in.
+    For multiple books use a space between the RFIDs.
+    <br />
+    <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+    <br />
+    <MatButton OnClick="@ReturnHandler" Raised="true">Return</MatButton>
+</p>
+<br />
+<br />
+
+<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Return" />
 
 @code {
+    private string RFIDs = "";
+    private string libraryName = "";
+    private DialogShower dialogShower;
 
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Figure the libray out.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        foreach (var claim in authState.User.Claims)
+        {
+            // Check if claim is the specific library role
+            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            {
+                // Set library name as role name and libray name are the same just with/ without spacing.
+                libraryName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");
+                break;
+            }
+        }
+    }
+
+    private async void ReturnHandler()
+    {
+        // Call endpoint with list of books to rent.
+        var response = await Http.PutAsync($"api/BookCopies/CheckinBookstoLibrayByRFID?libraryName={ libraryName }&RFIDValues={ RFIDs }", null);
+
+        // Show dialog with results.
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        if (response.IsSuccessStatusCode)
+        {
+            RFIDs = "";
+        }
+
+        base.StateHasChanged();
+    }
 }

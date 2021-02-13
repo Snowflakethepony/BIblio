@@ -206,18 +206,45 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> ExtentBorrowPeriodById(int bookCopyId)
+        public async Task<ActionResult> CheckinBookstoLibrayByRFID(string librayName, string RFIDValues)
         {
-            // List for all found bookcopies
-            var book = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
+            // Get library
+            var libray = await _wrapper.LibraryRepository.GetLibraryByName(librayName);
 
-            // Serverside check
-            if (book.TimesRerented >= BookCopy.MaxRerents)
+            // Split RFIDs
+            string[] RFIDs = RFIDValues.Split(' ');
+
+            // List for all found bookcopies
+            List<BookCopy> books = new List<BookCopy>();
+
+            // Forech ID find the assosiated bookcopy
+            foreach (var item in RFIDs)
             {
-                return BadRequest("Reached max rerents!");
+                try
+                {
+                    books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(item));
+                }
+                catch
+                {
+
+                }
             }
 
-            book.ReturnBy = book.ReturnBy?.AddDays(14);
+            // Foreach found book set new library
+            foreach (var book in books)
+            {
+                book.CurrentLibraryId = libray.LibraryId;
+                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+
+                // Check for active reservation 
+                var reservation = await _wrapper.ReservationRepository.GetReservationByBookCopyId(book.BookCopyId);
+
+                // Update it with an expiration date if any
+                if (reservation != null)
+                {
+                    reservation.ExpirationDate = DateTime.Now.AddDays(3);
+                }
+            }
 
             try
             {
@@ -230,6 +257,34 @@ namespace Biblio.Server.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<DateTime>> ExtentBorrowPeriodById(int bookCopyId)
+        {
+            // List for all found bookcopies
+            var book = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
+
+            // Serverside check
+            if (book.TimesRerented >= BookCopy.MaxRerents)
+            {
+                return BadRequest("Reached max rerents!");
+            }
+
+            book.ReturnBy = book.ReturnBy?.AddDays(14);
+            book.TimesRerented += 1;
+
+            try
+            {
+                // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok(book.ReturnBy);
         }
 
         [HttpPut]

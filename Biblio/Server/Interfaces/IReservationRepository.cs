@@ -11,6 +11,7 @@ namespace Biblio.Server.Interfaces
         Task<IEnumerable<Reservation>> GetAllReservationsByUser(string userId);
         Task<Reservation> GetReservationById(int ReservationId);
         Task<Reservation> GetReservationForUserByBookCipyId(string userId, int bookCopyId);
+        Task<Reservation> GetReservationByBookCopyId(int bookCopyId);
         Task<bool> DoesReservationExistForUserByBookCopyId(string userId, int bookCopyId);
         Task<IEnumerable<Reservation>> GetReservationsByBookTitle(string title);
         Task<IEnumerable<Reservation>> GetAllReservationByLibrary(int libraryId);

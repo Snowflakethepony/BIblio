@@ -64,8 +64,25 @@
         UIUpdated();
     }
 
-    private void OnDetailBackHandler()
+    private void OnDetailBackHandler(object o)
     {
+        if (o != null)
+        {
+            switch (BookType)
+            {
+                case SharedProperties.BookTypes.Book:
+                    var book = ((List<BookDTO>)inputObjectList).First(b => b.BookId == ((BookDTO)o).BookId);
+                    book = ((BookDTO)o);
+                    break;
+                case SharedProperties.BookTypes.Copy:
+                    var bookCopy = ((List<BookCopyDTO>)inputObjectList).First(b => b.BookCopyId == ((BookCopyDTO)o).BookCopyId);
+                    bookCopy = ((BookCopyDTO)o);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         ViewState = SharedProperties.ViewState.ShowList;
         UIUpdated();
     }

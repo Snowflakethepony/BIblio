@@ -61,5 +61,10 @@ namespace Biblio.Server.Repositories
         {
             return await FindByCondition(r => r.ReservedById == userId && r.ReservedCopyId == bookCopyId).FirstOrDefaultAsync();
         }
+
+        public async Task<Reservation> GetReservationByBookCopyId(int bookCopyId)
+        {
+            return await FindByCondition(r => r.ReservedCopyId == bookCopyId).FirstOrDefaultAsync();
+        }
     }
 }
