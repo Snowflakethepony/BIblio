@@ -1,5 +1,87 @@
-﻿<h3>AddLibraryAdmins</h3>
+﻿@page "/addlibraryadmins"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+<h3>Add administrators</h3>
+Here you give other librarians accounts the admin role over the library which is: <strong>@librayName!</strong>
+<br />
+
+<div>
+    <p>
+        <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" OnKeyDown="@OnKeyDownHandler" />
+    </p>
+    <p>
+        <MatButton OnClick="@SearchUserHandler" Raised="true">Search for user</MatButton>
+    </p>
+</div>
+<br />
+@if (appUser != null)
+{
+    <p>Found user with name: @appUser.FullName</p>
+}
+<br />
+<div>
+    <p>
+        <MatButton Disabled="@(appUser == null)" OnClick="@GiveAdminRoleHandler" Raised="true">Give admin role</MatButton>
+    </p>
+</div>
+
+<DialogShower DialogType="DialogShower.DialogTypes.AddAdmin" />
 
 @code {
+    private string username = "";
+    private ApplicationUserDTO appUser = null;
+    string librayName = "";
+    private DialogShower dialogShower;
 
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Figure the libray out.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        foreach (var claim in authState.User.Claims)
+        {
+            // Check if claim is the specific library role
+            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            {
+                // Set library name as role name and libray name are the same just with/ without spacing.
+                librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");
+                break;
+            }
+        }
+    }
+
+    private async Task OnKeyDownHandler(KeyboardEventArgs e)
+    {
+        if (e.Key == ConsoleKey.Enter.ToString() && string.IsNullOrEmpty(username))
+        {
+            await SearchUser();
+            base.StateHasChanged();
+        }
+    }
+
+    private async Task SearchUserHandler()
+    {
+        if (!string.IsNullOrEmpty(username))
+        {
+            appUser = await Http.GetFromJsonAsync<ApplicationUserDTO>($"api/AppUser/GetApplicationUserByUsername?username={ username }");
+
+            base.StateHasChanged();
+        }
+    }
+
+    private async Task GiveAdminRoleHandler()
+    {
+        var response = await Http.PutAsync($"api/AppUser/GiveUserLibraryAdminRole?userId={ appUser.Id }&libraryName={ librayName }", null);
+
+        // Show dialog and set component state
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+    }
 }

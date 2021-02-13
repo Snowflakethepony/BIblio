@@ -89,6 +89,29 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
+        public async Task<ActionResult> GiveUserLibraryAdminRole(string userId, string libraryName)
+        {
+            var user = await _usermanager.FindByIdAsync(userId);
+
+            string[] roles =
+            {
+                "LibraryAdmin",
+                libraryName
+            };
+
+            try
+            {
+                await _usermanager.AddToRolesAsync(user, roles);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
         public async Task<IActionResult> UpdateAppUser(string appUserId, [FromBody] ApplicationUserDTO appUser)
         {
             if (appUserId != appUser.Id)

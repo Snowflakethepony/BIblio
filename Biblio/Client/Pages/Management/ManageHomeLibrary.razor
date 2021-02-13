@@ -21,13 +21,18 @@ Here you set your home library to be of this library you are currently at which 
     case State.Changing:
         <div>
             <p>
-                <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" OnKeyDown="@OnKeyDownHandler"/>
+                <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" OnKeyDown="@OnKeyDownHandler" />
             </p>
             <p>
                 <MatButton OnClick="@SearchUser" Raised="true">Search for user</MatButton>
             </p>
         </div>
-
+        <br />
+        @if (appUser != null)
+        {
+            <p>Found user with name: @appUser.FullName</p>
+        }
+        <br />
         <div>
             <p>
                 <MatButton Disabled="@(appUser == null)" OnClick="@UpdateHomeLibray" Raised="true">Set @library.Name as home library</MatButton>

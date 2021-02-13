@@ -27,7 +27,8 @@
         IsReserved,
         IsBorrowed,
         UnAvailable,
-        Return
+        Return,
+        AddAdmin
     }
 
     [Parameter]
@@ -94,6 +95,9 @@
                 break;
             case DialogTypes.Return:
                 message = isSuccess ? "Successfully returned the book(s)" : "Failed to return the book(s). Please try again later.";
+                break;
+            case DialogTypes.AddAdmin:
+                message = isSuccess ? "Successfully added user to admin role" : "Failed to add user to admin role. Please try again later.";
                 break;
             default:
                 break;
