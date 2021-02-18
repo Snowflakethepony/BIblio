@@ -79,6 +79,7 @@ namespace Biblio.Server.Data
 
             // Custom table names.
             modelBuilder.Entity<Book>().ToTable("Books");
+            modelBuilder.Entity<AppUser>().ToTable("AppUsers");
         }
     }
 }
