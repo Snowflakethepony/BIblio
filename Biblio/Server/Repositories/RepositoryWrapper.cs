@@ -18,6 +18,7 @@ namespace Biblio.Server.Repositories
         private IBorrowedBookHistoryRepository borrowedBookHistoryRepository;
         private IAppUserRepository appUserRepository;
         private IReservationRepository reservationRepository;
+        private IApplicationRepository applicationRepository;
 
         public RepositoryWrapper(ApplicationDbContext applicationDbContext)
         {
@@ -125,6 +126,19 @@ namespace Biblio.Server.Repositories
                 }
 
                 return reservationRepository;
+            }
+        }
+
+        public IApplicationRepository ApplicationRepository
+        {
+            get
+            {
+                if (applicationRepository == null)
+                {
+                    applicationRepository = new ApplicationRepository(DbContext);
+                }
+
+                return applicationRepository;
             }
         }
 

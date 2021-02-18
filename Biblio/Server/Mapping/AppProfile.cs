@@ -55,6 +55,10 @@ namespace Biblio.Server.Mapping
             // Reservation mappings
             CreateMap<Reservation, ReservationDTO>();
             CreateMap<ReservationDTO, Reservation>();
+
+            // Application mappings
+            CreateMap<Application, ApplicationDTO>();
+            CreateMap<ApplicationDTO, Application>();
         }
     }
 }

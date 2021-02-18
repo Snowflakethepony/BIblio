@@ -1,11 +1,33 @@
 ﻿@page "/"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject HttpClient Http
 
 <AuthorizeView>
     <Authorized>
         <h1>Welcome back!</h1>
-
+        Below here you can see your current reservartions. Make sure to collect them before the reservation expires!
         <p>
-            
+            <div>
+                <MatTable Context="reservation" Items="reservations" class="mat-elevation-z5" AllowSelection="true">
+                    <MatTableHeader>
+                        <th>Reserved book</th>
+                        <th>From library</th>
+                        <th>Is sent</th>
+                        <th>Expiration date</th>
+                        <th>Actions</th>
+                    </MatTableHeader>
+                    <MatTableRow>
+                        <td>@reservation.ReservedCopy.Book.Title</td>
+                        <td>@reservation.Library.Name</td>
+                        <td>@reservation.IsSent</td>
+                        <td>@(reservation.ExpirationDate == null ? "No expiration set" : reservation.ExpirationDate)</td>
+                        <td><MatButton Raised="true" Label="Delete Reservation" OnClick="@(() => DeleteReservationHandler(reservation.ReservationId))" /></td>
+                    </MatTableRow>
+                </MatTable>
+
+                <DialogShower @ref="@dialogShower" DialogType="@DialogShower.DialogTypes.ReservationDel" />
+            </div>
+            <DialogShower @ref="@dialogShower" DialogType="@DialogShower.DialogTypes.ReservationDel" />
         </p>
     </Authorized>
     <NotAuthorized>
@@ -20,5 +42,34 @@
 </AuthorizeView>
 
 @code {
+    private List<ReservationDTO> reservations;
+    private string username;
+    DialogShower dialogShower;
 
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Set username.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        username = authState.User.Identity.Name;
+
+        // Get
+        reservations = await Http.GetFromJsonAsync<List<ReservationDTO>>($"api/Reservations/GetAllReservationsByUser?username={ username }");
+    }
+
+    private async Task DeleteReservationHandler(int id)
+    {
+        HttpResponseMessage response;
+
+        response = await Http.DeleteAsync($"api/Reservations/DeleteReservation?reservationId={ id }");
+
+        if (response.IsSuccessStatusCode)
+        {
+            reservations.Remove(reservations.FirstOrDefault(r => r.ReservationId == id));
+        }
+
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+    }
 } 

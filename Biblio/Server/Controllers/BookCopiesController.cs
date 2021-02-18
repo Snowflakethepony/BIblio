@@ -28,6 +28,11 @@ namespace Biblio.Server.Controllers
             this._usermanager = userManager;
         }
 
+        /// <summary>
+        /// Gets all bookcopies borrowed by a user.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<List<BookCopyDTO>>> GetAllBookCopiesForUser(string username)
         {
@@ -206,10 +211,11 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> CheckinBookstoLibrayByRFID(string librayName, string RFIDValues)
+        public async Task<ActionResult> CheckinBookstoLibrayByRFID(string libraryName, string RFIDValues)
         {
+            libraryName = "Horsens Bibliotek";
             // Get library
-            var libray = await _wrapper.LibraryRepository.GetLibraryByName(librayName);
+            var library = await _wrapper.LibraryRepository.GetLibraryByName(libraryName);
 
             // Split RFIDs
             string[] RFIDs = RFIDValues.Split(' ');
@@ -233,7 +239,7 @@ namespace Biblio.Server.Controllers
             // Foreach found book set new library
             foreach (var book in books)
             {
-                book.CurrentLibraryId = libray.LibraryId;
+                book.CurrentLibraryId = library.LibraryId;
                 _wrapper.BookCopyRepository.UpdateBookCopy(book);
 
                 // Check for active reservation 
@@ -243,6 +249,7 @@ namespace Biblio.Server.Controllers
                 if (reservation != null)
                 {
                     reservation.ExpirationDate = DateTime.Now.AddDays(3);
+                    _wrapper.ReservationRepository.UpdateReservation(reservation);
                 }
             }
 

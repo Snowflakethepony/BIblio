@@ -28,9 +28,14 @@
         IsBorrowed,
         UnAvailable,
         Return,
-        AddAdmin
+        AddAdmin,
+        Checkin,
+        Apply
     }
 
+    /// <summary>
+    /// Type of dialog to show.
+    /// </summary>
     [Parameter]
     public DialogTypes DialogType { get; set; }
 
@@ -48,6 +53,11 @@
         ShowDialog(isSuccess);
     }
 
+    /// <summary>
+    /// Handler for displaying the dialog direktly.
+    /// </summary>
+    /// <param name="title">Title of the dialog.</param>
+    /// <param name="message">Message of the dialog.</param>
     public void HandleDialog(string title, string message)
     {
 
@@ -98,6 +108,12 @@
                 break;
             case DialogTypes.AddAdmin:
                 message = isSuccess ? "Successfully added user to admin role" : "Failed to add user to admin role. Please try again later.";
+                break;
+            case DialogTypes.Checkin:
+                message = isSuccess ? "Successfully checkedin the book(s)" : "Failed to checkin the book(s). Please try again later.";
+                break;
+            case DialogTypes.Apply:
+                message = isSuccess ? "Successfully sent application. Please await an administrator to review the application." : "Failed to sent application. Please try again later.";
                 break;
             default:
                 break;

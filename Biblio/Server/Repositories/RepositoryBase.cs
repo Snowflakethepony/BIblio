@@ -16,6 +16,7 @@ namespace Biblio.Server.Repositories
         public RepositoryBase(ApplicationDbContext applicationDbContext)
         {
             this.DbContext = applicationDbContext;
+            //DbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public IQueryable<T> FindAll()

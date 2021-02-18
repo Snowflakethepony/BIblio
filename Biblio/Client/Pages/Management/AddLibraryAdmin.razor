@@ -1,4 +1,4 @@
-﻿@page "/addlibraryadmins"
+﻿@page "/addlibraryadmin"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.Text.RegularExpressions
@@ -12,7 +12,7 @@ Here you give other librarians accounts the admin role over the library which is
 
 <div>
     <p>
-        <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" OnKeyDown="@OnKeyDownHandler" />
+        <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" />
     </p>
     <p>
         <MatButton OnClick="@SearchUserHandler" Raised="true">Search for user</MatButton>
@@ -30,7 +30,7 @@ Here you give other librarians accounts the admin role over the library which is
     </p>
 </div>
 
-<DialogShower DialogType="DialogShower.DialogTypes.AddAdmin" />
+<DialogShower @ref="dialogShower" DialogType="DialogShower.DialogTypes.AddAdmin" />
 
 @code {
     private string username = "";
@@ -55,15 +55,6 @@ Here you give other librarians accounts the admin role over the library which is
                 librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");
                 break;
             }
-        }
-    }
-
-    private async Task OnKeyDownHandler(KeyboardEventArgs e)
-    {
-        if (e.Key == ConsoleKey.Enter.ToString() && string.IsNullOrEmpty(username))
-        {
-            await SearchUser();
-            base.StateHasChanged();
         }
     }
 

@@ -14,9 +14,7 @@ namespace Biblio.Shared.Models
     {
         [Key]
         public int BookId { get; set; }
-        [Required]
         public string Title { get; set; }
-        [Required]
         public string Blurb { get; set; }
         public DateTime PublishedDate { get; set; }
         public short? Height { get; set; }

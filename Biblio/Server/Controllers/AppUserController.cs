@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Biblio.Server.Controllers
@@ -92,6 +93,7 @@ namespace Biblio.Server.Controllers
         public async Task<ActionResult> GiveUserLibraryAdminRole(string userId, string libraryName)
         {
             var user = await _usermanager.FindByIdAsync(userId);
+            libraryName = Regex.Replace(libraryName, "\\s+", "");
 
             string[] roles =
             {

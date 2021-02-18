@@ -1,5 +1,54 @@
-﻿<h3>ApplyLibrary</h3>
+﻿@page "/applylibrary"
+@inject HttpClient Http
+
+<h3>Apply a library for the system</h3>
+
+<div>
+    <p>
+        <MatTextField @bind-Value="@application.Name" TValue="string" Label="Library name" Required="true" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@application.AddressLine" TValue="string" Label="Library address" Required="true" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@application.City" TValue="string" Label="City" Required="true" />
+    </p>
+    <p>
+        <MatTextField @bind-Value="@application.PostalCode" TValue="string" Label="City Postalcode" Required="true" />
+    </p>
+    <p>
+        Phone number to library main kontakt phone. If the library does not have one it must be the phone number to head of the library.
+        <br />
+        <MatTextField @bind-Value="@application.PhoneNumber" TValue="string" Label="Phone number" Required="true" />
+    </p>
+    <p>
+        Must be the e-mail to the head of the library.
+        <br />
+        <MatTextField @bind-Value="@application.EmailAddress" TValue="string" Label="Head of library e-mail" Required="true" />
+    </p>
+    <p>
+        <MatButton OnClick="@SubmitAplication" Raised="true">Submit application</MatButton>
+    </p>
+
+    <DialogShower @ref="@DialogShower" DialogType="@DialogShower.DialogTypes.Apply" />
+</div>
 
 @code {
+    private ApplicationDTO application = new ApplicationDTO();
+    private DialogShower DialogShower;
 
+    private async Task SubmitAplication()
+    {
+        // Call API.
+        var response = await Http.PostAsJsonAsync<ApplicationDTO>("api/Applications/CreateApplication", application);
+
+        // Display telling response to user.
+        DialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        // Reset the DTO on success.
+        if (response.IsSuccessStatusCode)
+        {
+            application = new ApplicationDTO();
+        }
+    }
 }

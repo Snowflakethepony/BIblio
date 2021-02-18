@@ -15,6 +15,7 @@ namespace Biblio.Server.Interfaces
         IBorrowedBookHistoryRepository BorrowedBookHistoryRepository { get; }
         IAppUserRepository AppUserRepository { get; }
         IReservationRepository ReservationRepository { get; }
+        IApplicationRepository ApplicationRepository { get; }
         /// <summary>
         /// Saves the changes made to the context synchronously. 
         /// </summary>

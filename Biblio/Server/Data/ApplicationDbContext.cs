@@ -26,6 +26,7 @@ namespace Biblio.Server.Data
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Library> Libraries { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<Application> Applications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

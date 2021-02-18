@@ -66,22 +66,36 @@
             </li>
 
             <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/checkinbooks" Match="NavLinkMatch.All">
+                <NavLink class="nav-link" href="/managebooks" Match="NavLinkMatch.All">
                     <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Manage Books
                 </NavLink>
             </li>
 
             <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/checkinbooks" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Check User Reservations
+                <NavLink class="nav-link" href="/managereservations" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> User Reservations
+                </NavLink>
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/addlibraryadmin" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Add Library Admin
                 </NavLink>
             </li>
         </AuthorizeView>
 
         <AuthorizeView Roles="SiteAdministrator">
             <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/managehomelibrary" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> POOOOWER!
+                <NavLink class="nav-link" href="/addlibrary" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Add Library
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+        <AuthorizeView>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/applylibrary" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="assignment"></MatIcon></span> Apply Library
                 </NavLink>
             </li>
         </AuthorizeView>

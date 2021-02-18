@@ -16,12 +16,12 @@
     <br />
     <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
     <br />
-    <MatButton OnClick="@ReturnHandler" Raised="true">Return</MatButton>
+    <MatButton OnClick="@CheckinHandler" Raised="true">Checin</MatButton>
 </p>
 <br />
 <br />
 
-<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Return" />
+<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Checkin" />
 
 @code {
     private string RFIDs = "";
@@ -48,7 +48,7 @@
         }
     }
 
-    private async void ReturnHandler()
+    private async void CheckinHandler()
     {
         // Call endpoint with list of books to rent.
         var response = await Http.PutAsync($"api/BookCopies/CheckinBookstoLibrayByRFID?libraryName={ libraryName }&RFIDValues={ RFIDs }", null);

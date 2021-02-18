@@ -18,6 +18,11 @@ namespace Biblio.Server.Interfaces
         Task<BookCopy> GetBookCopyByRFID(string RFID);
         Task<BookCopy> GetAvailableBookCopyByRFID(string RFID);
         Task<BookCopy> GetBookCopyByRFIDNoRelations(string RFID);
+        /// <summary>
+        /// Gets all bookCopies borrowed by a specified user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>A users borrowed books.</returns>
         Task<IEnumerable<BookCopy>> GetAllBookCopiesForUser(string userId);
         Task<BookCopy> GetBookCopyById(int bookCopyId);
         Task<BookCopy> GetBookCopyByIdIncludingRelation(int bookCopyId);
