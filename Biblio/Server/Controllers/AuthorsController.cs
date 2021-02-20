@@ -46,7 +46,9 @@ namespace Biblio.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<AuthorDTO>> GetAuthorByPseudonym(string pseudonym)
         {
-            return Ok(_mapper.Map<AuthorDTO>(await _wrapper.AuthorRepository.GetAuthorByPseudonym(pseudonym)));
+            var author = _mapper.Map<AuthorDTO>(await _wrapper.AuthorRepository.GetAuthorByPseudonym(pseudonym));
+
+            return Ok(author);
         }
 
         [HttpPost]

@@ -31,7 +31,6 @@
                     <span class="oi" aria-hidden="true"><MatIcon Icon="assignment"></MatIcon></span> Borrowed Books
                 </NavLink>
             </li>
-
         </AuthorizeView>
 
         <AuthorizeView Roles="LibraryAdmin">
@@ -61,33 +60,33 @@
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/checkinbooks" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Checkin Books
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="check_circle"></MatIcon></span> Checkin Books
                 </NavLink>
             </li>
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/managebooks" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Manage Books
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="work"></MatIcon></span> Manage Books
                 </NavLink>
             </li>
 
-            <li class="nav-item px-3">
+            @*<li class="nav-item px-3">
                 <NavLink class="nav-link" href="/managereservations" Match="NavLinkMatch.All">
                     <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> User Reservations
                 </NavLink>
-            </li>
+            </li>*@
 
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="/addlibraryadmin" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="Home"></MatIcon></span> Add Library Admin
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="verified_user"></MatIcon></span> Add Library Admin
                 </NavLink>
             </li>
         </AuthorizeView>
 
         <AuthorizeView Roles="SiteAdministrator">
             <li class="nav-item px-3">
-                <NavLink class="nav-link" href="/addlibrary" Match="NavLinkMatch.All">
-                    <span class="oi" aria-hidden="true"><MatIcon Icon="search"></MatIcon></span> Add Library
+                <NavLink class="nav-link" href="/manageapplications" Match="NavLinkMatch.All">
+                    <span class="oi" aria-hidden="true"><MatIcon Icon="assignment_turned_in"></MatIcon></span> Add Library
                 </NavLink>
             </li>
         </AuthorizeView>

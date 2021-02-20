@@ -50,6 +50,22 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult<List<BookDTO>>> GetBooksByTitleAndFormat(string title, string format)
+        {
+            try
+            {
+            var conFormat = (BookProperties.BookFormats)Enum.Parse(typeof(BookProperties.BookFormats), format);
+            var books = _mapper.Map<List<BookDTO>>(await _wrapper.BookRepository.GetBooksByTitleAndFormat(title, conFormat));
+            return Ok(books);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        [HttpGet]
         public async Task<ActionResult<List<BookDTO>>> GetBooksByAuthor(int authorId)
         {
             return Ok(_mapper.Map<List<BookDTO>>(await _wrapper.BookRepository.GetBooksByAuthor(authorId)));
@@ -70,7 +86,43 @@ namespace Biblio.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<BookDTO>> CreateBook([FromBody] BookDTO book)
         {
-            _wrapper.BookRepository.CreateBook(_mapper.Map<Book>(book));
+            var conBook = _mapper.Map<Book>(book);
+
+            var newBook = new Book()
+            {
+                Blurb = book.Blurb,
+                Depth = book.Depth,
+                Format = book.Format,
+                Height = book.Height,
+                Image = book.Image,
+                NumberofPages = book.NumberofPages,
+                PublishedDate = book.PublishedDate,
+                Title = book.Title,
+                Type = book.Type,
+                Width = book.Width,
+                Weight = book.Weight,
+                Genres = new List<Genre>(),
+                Authors = new List<Author>()
+            };
+
+            // First create the book with no relations -> Will take relations as new objects too which they are not.
+            _wrapper.BookRepository.CreateBook(newBook);
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            // Add relations            
+            newBook.Authors.AddRange(conBook.Authors);
+            newBook.Genres.AddRange(conBook.Genres);
+
+            // Update the model
+            _wrapper.BookRepository.Update(newBook);
 
             try
             {

@@ -127,39 +127,7 @@ namespace Biblio.Server.Controllers
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteReservation(int reservationId)
-        {
-            var reservation = await _wrapper.ReservationRepository.GetReservationById(reservationId);
-
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(reservation.ReservedCopyId);
-                bookCopy.IsAvailable = true;
-
-                _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
-                _wrapper.ReservationRepository.DeleteReservation(reservation);
-            }
-
-            
-
-            try
-            {
-                await _wrapper.SaveAsync();
-            }
-            catch (DbUpdateException e)
-            {
-                return BadRequest(e.Message);
-            }
-
-            return Ok();
-        }
-
-        [HttpDelete]
+        [HttpPut]
         public async Task<IActionResult> DeleteReservationForUserByBookCopyId(string username, int bookCopyId)
         {
             // Get user
@@ -181,6 +149,38 @@ namespace Biblio.Server.Controllers
                 _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
                 _wrapper.ReservationRepository.DeleteReservation(reservation);
             }
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReservation(int reservationId)
+        {
+            var reservation = await _wrapper.ReservationRepository.GetReservationById(reservationId);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(reservation.ReservedCopyId);
+                bookCopy.IsAvailable = true;
+
+                _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
+                _wrapper.ReservationRepository.DeleteReservation(reservation);
+            }
+
+            
 
             try
             {

@@ -27,7 +27,7 @@ namespace Biblio.Shared.Models
         public BookProperties.BookTypes Type { get; set; }
 
         // Relations
-        public ICollection<Author> Authors { get; set; }
-        public ICollection<Genre> Genres { get; set; }
+        public List<Author> Authors { get; set; }
+        public List<Genre> Genres { get; set; }
     }
 }

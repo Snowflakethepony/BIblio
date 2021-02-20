@@ -1,0 +1,177 @@
+﻿@using MatBlazor
+
+
+<style>
+    .MultiSelectMenuContent {
+        min-width: 400px !important;
+    }
+
+    .CurrentSelectionContainer {
+        text-align: left;
+        border-style: solid;
+        border-width: 1px;
+        border-color: #6200ee;
+        color: #6200ee;
+        padding: 2px;
+        border-radius: 3px
+    }
+
+    .CheckBoxContainer {
+        text-align: left;
+        color: white;
+        padding: 2px;
+        margin-left: 5px;
+        cursor: pointer;
+    }
+
+        .CheckBoxContainer .mdc-checkbox__background {
+            background-color: white !important;
+            border-color: #6200ee !important;
+            color: #6200ee !important;
+        }
+
+        .CheckBoxContainer .mdc-checkbox__checkmark {
+            color: #6200ee !important;
+        }
+
+        .CheckBoxContainer label {
+            color: #6200ee !important;
+        }
+
+    .ConfirmIcon {
+        color: #6200ee !important;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .CancleIcon {
+        color: #6200ee !important;
+        font-size: 20px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="MultiSelectEditorContainer">
+
+    <MatButton Outlined="true" OnClick="@Open" RefBack="@buttonForwardRef">
+        <span style="margin-right:10px"> @StringSelectedItems</span>  <i class="fas fa-sort-down"></i>
+    </MatButton>
+
+    <MatMenu @ref="Menu" TargetForwardRef="@buttonForwardRef">
+        @*Class="@collapseCssClass"*@
+        <div class="MultiSelectMenuContent">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm" style="text-align:left">
+
+                        <i class="far fa-check-circle ConfirmIcon" @onclick="@(() => ConfirmSelection())" title="Confirm"></i>
+                    </div>
+
+                    <div class="col-sm" style="text-align:right">
+
+                        <i class="far fa-window-close CancleIcon" @onclick="@(() =>ClearSelection())" title="Cancel"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="CurrentSelectionContainer">
+                            @CurrentSelection
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @{
+                foreach (var Item in SourceItems)
+                {
+                    bool IsChecked = GetIsChecked(Item);
+                    <div class="CheckBoxContainer">
+                        <MatCheckbox Value="@IsChecked" TValue="bool" ValueChanged="@((value) => CheckedChanged(Item))" Label="@Item"></MatCheckbox>
+                    </div>
+                }
+            }
+        </div>
+    </MatMenu>
+
+</div>
+
+@code {
+
+    bool collapseDropDown = true;
+    string collapseCssClass => collapseDropDown ? "collapse" : null;
+    private string ValueSeparator = ";";
+
+    [Parameter]
+    public List<string> SourceItems { get; set; }
+
+    ForwardRef buttonForwardRef = new ForwardRef();
+    BaseMatMenu Menu;
+
+    private async Task Open(MouseEventArgs e)
+    {
+        ClearSelection();
+        await this.Menu.OpenAsync();
+    }
+
+    [Parameter]
+    public List<string> SelectedItems
+    {
+        get; set;
+    }
+
+    [Parameter]
+    public EventCallback<List<string>> SelectedItemsChanged { get; set; }
+
+    private string StringSelectedItems;
+    private string CurrentSelection;
+
+    private void ConfirmSelection()
+    {
+        StringSelectedItems = String.Join(ValueSeparator, SelectedItems);
+        SelectedItemsChanged.InvokeAsync(SelectedItems);
+        collapseDropDown = true;
+    }
+
+    private void ClearSelection()
+    {
+        SelectedItems = StringSelectedItems.Split(ValueSeparator).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        collapseDropDown = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        StringSelectedItems = String.Join(ValueSeparator, SelectedItems);
+        CurrentSelection = StringSelectedItems;
+    }
+
+    private void UpdateCurrentSelection()
+    {
+        CurrentSelection = String.Join(ValueSeparator, SelectedItems);
+    }
+
+    private bool GetIsChecked(string Item)
+    {
+        var IsChecked = true;
+
+        IsChecked = !string.IsNullOrWhiteSpace(SelectedItems.Where(I => I == Item).FirstOrDefault());
+
+        return IsChecked;
+    }
+
+    private void CheckedChanged(string item)
+    {
+
+        if (!StringSelectedItems.Contains(item))
+        {
+            SelectedItems.Add(item);
+        }
+        else
+        {
+            SelectedItems.Remove(item);
+        }
+
+        UpdateCurrentSelection();
+        InvokeAsync(StateHasChanged);
+    }
+}

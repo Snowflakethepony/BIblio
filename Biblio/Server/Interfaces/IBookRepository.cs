@@ -14,6 +14,7 @@ namespace Biblio.Server.Interfaces
         Task<Book> GetBookById(int bookId);
         Task<Book> GetBookByIdIncludingRelations(int bookId);
         Task<Book> GetBookByTitle(string title);
+        Task<IEnumerable<Book>> GetBooksByTitleAndFormat(string title, BookProperties.BookFormats format);
         Task<IEnumerable<Book>> SearchBooksByTitle(string title);
         void CreateBook(Book book);
         void UpdateBook(Book book);

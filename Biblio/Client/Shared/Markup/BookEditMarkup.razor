@@ -29,7 +29,7 @@
         <MatTextField @bind-Value="@book.Weight" TValue="short?" Label="Weight" Required="false" />
     </p>
     <p>
-        <MatTextField @bind-Value="@book.NumberofPages" TValue="int" Label="Number of pages" Required="true" />
+        <MatTextField @bind-Value="@book.NumberofPages" TValue="short" Label="Number of pages" Required="true" />
     </p>
     <p>
         <MatSelectItem @bind-Value="@book.Format" TValue="BookProperties.BookFormats" Items="@formatItems"></MatSelectItem>

@@ -11,13 +11,7 @@ namespace Biblio.Shared.Models.DTOs
         public int AuthorId { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
-        public string FullName
-        {
-            get
-            {
-                return Firstname + " " + Lastname;
-            }
-        }
+        public string FullName { get; set; }
         public DateTime? DOB { get; set; }
         public string Pseudonym { get; set; } = "";
     }

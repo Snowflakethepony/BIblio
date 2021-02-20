@@ -30,7 +30,11 @@
         Return,
         AddAdmin,
         Checkin,
-        Apply
+        Apply,
+        Delete,
+        Add,
+        AddExisting,
+        AddLibrary
     }
 
     /// <summary>
@@ -114,6 +118,18 @@
                 break;
             case DialogTypes.Apply:
                 message = isSuccess ? "Successfully sent application. Please await an administrator to review the application." : "Failed to sent application. Please try again later.";
+                break;
+            case DialogTypes.Delete:
+                message = isSuccess ? "Successfully deleted the book copy/copies." : "Failed to delete the book copy/ copies. Please try again later.";
+                break;
+            case DialogTypes.Add:
+                message = isSuccess ? "Successfully added the book copy/copies." : "Failed to add the book copy/ copies. Please try again later.";
+                break;
+            case DialogTypes.AddExisting:
+                message = isSuccess ? "Successfully added the book copy/copies from existing book type." : "Failed to add the book copy/ copies from existing book type. Please try again later.";
+                break;
+            case DialogTypes.AddLibrary:
+                message = isSuccess ? "Successfully verified the application and created a new library." : "Failed to handle the application. Please try again later.";
                 break;
             default:
                 break;

@@ -12,8 +12,6 @@ else
             <div class="row">
                 @foreach (var book in books)
                 {
-
-
                     <div class="col-md-4" style="margin-bottom:20px;">
                         <MatCard class="demo-mat-card">
                             <MatCardContent>
@@ -28,7 +26,7 @@ else
                                 </div>
 
                                 <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-                                    @book.Blurb.Substring(0, book.Blurb.IndexOf('.'))
+                                    @string.Format("{0,60}", book.Blurb)
                                 </MatBody2>
                             </MatCardContent>
                             <MatCardActions>

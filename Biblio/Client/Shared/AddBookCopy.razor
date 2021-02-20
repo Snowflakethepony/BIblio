@@ -1,0 +1,145 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using System.IO
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+<h4>Add book copy from book type</h4>
+<MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnBackHandler.InvokeAsync(null))" Label="Back"></MatButton>
+
+<div>
+    <p>
+        <MatTextField Required="true" @bind-Value="@bookTitle" Label="Title" />
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@bookFormat" TValue="BookProperties.BookFormats" Items="@formatItems" Label="Format"></MatSelectItem>
+    </p>
+    <p>
+        <MatButton OnClick="@SearchForBookTypes" Raised="true">Search</MatButton>
+    </p>
+</div>
+
+<hr />
+
+<div>
+    @switch (hasSelected)
+    {
+        case true:
+            <p>Fill in the rest of the form, and click the button to add the book copies.</p>
+            <p>
+                <MatTextField Required="true" @bind-Value="@amount" TValue="int" Label="Amount of copies" />
+            </p>
+            <p>
+                <MatTextField Required="true" @bind-Value="@bookCopy.ShelfNumber" TValue="int" Label="Shelfnumber" />
+            </p>
+            <p>
+                <MatButton OnClick="@CreateCopies" Raised="true">Add copies</MatButton>
+            </p>
+            break;
+        case false:
+            <MatTable Items="books" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+                <MatTableHeader>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Published</th>
+                    <th>Format</th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>@context.Title</td>
+                    <td>@context.Authors.FirstOrDefault().FullName</td>
+                    <td>@context.PublishedDate</td>
+                    <td>@context.Format.ToString()</td>
+                </MatTableRow>
+            </MatTable>
+            break;
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool?> OnBackHandler { get; set; }
+
+    [Parameter]
+    public DialogShower DialogShower { get; set; }
+
+    private int amount = 1;
+    private BookCopyDTO bookCopy = new BookCopyDTO();
+    private bool hasSelected = false;
+    private List<BookDTO> books = new List<BookDTO>();
+    private BookDTO selectedBook;
+    private BookProperties.BookFormats[] formatItems = Enum.GetValues(typeof(BookProperties.BookFormats)).Cast<BookProperties.BookFormats>().ToArray();
+    private BookProperties.BookFormats bookFormat;
+    private LibraryDTOMinusRelations library = new LibraryDTOMinusRelations();
+    private string bookTitle = "";
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Figure the libray out.
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        string librayName = "";
+
+        foreach (var claim in authState.User.Claims)
+        {
+            // Check if claim is the specific library role
+            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            {
+                // Set library name as role name and libray name are the same just with/ without spacing.
+                librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");
+                break;
+            }
+        }
+
+        library = await Http.GetFromJsonAsync<LibraryDTOMinusRelations>($"api/Libraries/GetLibrayByName?name={ librayName }");
+
+        bookCopy.OriginLibrary = library;
+        bookCopy.CurrentLibrary = library;
+    }
+
+    private async void SearchForBookTypes()
+    {
+        books = await Http.GetFromJsonAsync<List<BookDTO>>($"api/Books/GetBooksByTitleAndFormat?title={ bookTitle }&format={ bookFormat.ToString() }");
+
+        hasSelected = false;
+
+        base.StateHasChanged();
+    }
+
+    private async Task CreateCopies()
+    {
+        var response = await Http.PostAsJsonAsync<BookCopyDTO>($"api/BookCopies/CreateBookCopiesFromDto?amount={ amount }", bookCopy);
+
+        // Show dialog with results.
+        DialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        if (response.IsSuccessStatusCode)
+        {
+            bookCopy = new BookCopyDTO();
+            books = new List<BookDTO>();
+            selectedBook = new BookDTO();
+        }
+
+        base.StateHasChanged();
+    }
+
+    public void SelectionChangedEvent(object row)
+    {
+        if (row == null)
+        {
+            // Do nothing on empty row.
+            return;
+        }
+        else
+        {
+            bookCopy.Book = row as BookDTO;
+            hasSelected = true;
+        }
+
+        base.StateHasChanged();
+    }
+
+}

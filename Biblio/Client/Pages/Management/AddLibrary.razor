@@ -1,5 +1,75 @@
-﻿<h3>AddLibrary</h3>
+﻿@page "/manageapplications"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "SiteAdministrator")]
+
+<h3>Manage library applications</h3>
+
+<div>
+    <MatTable Items="applications" class="mat-elevation-z5" AllowSelection="false">
+        <MatTableHeader>
+            <th>Name</th>
+            <th>City</th>
+            <th>PhoneNumber</th>
+            <th>EmailAddress</th>
+            <th>Actions</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.Name</td>
+            <td>@context.City</td>
+            <td>@context.PhoneNumber</td>
+            <td>@context.EmailAddress</td>
+            <td>
+                <MatButton Raised="true" Label="Verify" OnClick="@(() => HandleApplication(true, context.ApplicationId))" />
+                <MatButton Raised="true" Label="Deny" OnClick="@(() => HandleApplication(false, context.ApplicationId))" />
+            </td>
+        </MatTableRow>
+    </MatTable>
+
+    <DialogShower @ref="@dialogShower" DialogType="@DialogShower.DialogTypes.AddLibrary" />
+</div>
+
 
 @code {
+    private List<ApplicationDTO> applications;
+    private DialogShower dialogShower;
 
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        applications = await Http.GetFromJsonAsync<List<ApplicationDTO>>("api/Applications/GetAllOpenApplications");
+    }
+
+    private async Task HandleApplication(bool isVerified, int id)
+    {
+        HttpResponseMessage response = new HttpResponseMessage();
+        var application = applications.FirstOrDefault(a => a.ApplicationId == id);
+
+        if (isVerified)
+        {
+            response = await Http.PostAsJsonAsync<ApplicationDTO>("api/Libraries/CreateLibraryFromApplication", application);
+        }
+        else
+        {
+            // Set application to denied.
+            application.IsHandled = true;
+            application.IsVerified = false;
+
+            response = await Http.PutAsJsonAsync<ApplicationDTO>("api/Applications/CreateLibraryFromApplication", application);
+        }
+
+
+
+        if (response.IsSuccessStatusCode)
+        {
+            applications.Remove(application);
+        }
+
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
+    }
 }

@@ -27,12 +27,14 @@ else
                                         {
                                             <p>
                                                 Return Date: @bookCopy.ReturnBy
+                                                <br />
                                                 Reborrow available: @(bookCopy.TimesRerented <= 3 ? "Yes" : "No")
                                             </p>
                                         } else
                                         {
                                             <p>
                                                 Library: @bookCopy.OriginLibrary.Name
+                                                <br />
                                                 Available: @bookCopy.IsAvailable
                                             </p>
                                         }
@@ -40,7 +42,7 @@ else
                                 </div>
 
                                 <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-                                    @bookCopy.Book.Blurb.Substring(0, bookCopy.Book.Blurb.IndexOf('.'))
+                                   @bookCopy.Book.Blurb.Substring(0, bookCopy.Book.Blurb.IndexOf('.', 100) + 1)
                                 </MatBody2>
                             </MatCardContent>
                             <MatCardActions>

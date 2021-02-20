@@ -84,7 +84,6 @@ namespace Biblio.Server.Controllers
             return Ok(_mapper.Map<List<BookCopyDTO>>(bookCopies));
         }
 
-
         [HttpGet]
         public async Task<ActionResult<List<BookCopyDTO>>> GetAllBookCopiesReturnOverdueForLibrary(int libraryId)
         {
@@ -125,6 +124,37 @@ namespace Biblio.Server.Controllers
         public async Task<ActionResult<BookCopyDTO>> CreateBookCopy([FromBody] BookCopyDTO bookCopy)
         {
             _wrapper.BookCopyRepository.CreateBookCopy(_mapper.Map<BookCopy>(bookCopy));
+
+            try
+            {
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return CreatedAtAction(nameof(CreateBookCopy), new { id = bookCopy.BookCopyId }, bookCopy);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<BookCopyDTO>> CreateBookCopiesFromDto(int amount, [FromBody] BookCopyDTO bookCopyDto)
+        {
+            var bookCopy = _mapper.Map<BookCopy>(bookCopyDto);
+
+            for (int i = 0; i < amount; i++)
+            {
+                var newBookCopy = new BookCopy()
+                {
+                    BookId = bookCopy.Book.BookId,
+                    IsAvailable = true,
+                    ShelfNumber = bookCopy.ShelfNumber,
+                    OriginLibraryId = bookCopy.OriginLibrary.LibraryId,
+                    CurrentLibraryId = bookCopy.CurrentLibrary.LibraryId
+                };
+
+                _wrapper.BookCopyRepository.CreateBookCopy(newBookCopy);
+            }
 
             try
             {
@@ -213,7 +243,6 @@ namespace Biblio.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> CheckinBookstoLibrayByRFID(string libraryName, string RFIDValues)
         {
-            libraryName = "Horsens Bibliotek";
             // Get library
             var library = await _wrapper.LibraryRepository.GetLibraryByName(libraryName);
 
@@ -346,6 +375,7 @@ namespace Biblio.Server.Controllers
                 book.BorrowedAt = DateTime.Now;
                 book.ReturnBy = DateTime.Now.AddDays(14);
                 book.BorrowerId = userId;
+                book.TimesRerented = 0;
 
                 _wrapper.BookCopyRepository.UpdateBookCopy(book);
             }
@@ -366,37 +396,79 @@ namespace Biblio.Server.Controllers
         [HttpPut]
         public async Task<ActionResult> ReturnBooks(string RFIDValues)
         {
-            var books = new List<BookCopy>();
+            var bookCopies = new List<BookCopy>();
 
             foreach (var id in RFIDValues.Split(' '))
             {
-                books.Add(await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(id));
+                var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(id);
+
+                if (bookCopy != null)
+                {
+                    bookCopies.Add(bookCopy);
+                }
             }
 
             // Foreach found book set properties for renting purposes
-            foreach (var book in books)
+            foreach (var bookCopy in bookCopies)
             {
                 _wrapper.BorrowedBookHistoryRepository.CreateRentedBookHistory(new BorrowedBookHistory()
                 {
-                    BookCopyId = book.BookCopyId,
-                    BorrowedAt = (DateTime)book.BorrowedAt,
+                    BookCopyId = bookCopy.BookCopyId,
+                    BorrowedAt = (DateTime)bookCopy.BorrowedAt,
                     ReturnedAt = DateTime.Now,
-                    TimesRerented = (int)book.TimesRerented,
-                    BorrowerId = book.BorrowerId
+                    TimesRerented = (int)bookCopy.TimesRerented,
+                    BorrowerId = bookCopy.BorrowerId
                 });
 
-                book.IsAvailable = true;
-                book.BorrowedAt = null;
-                book.ReturnBy = null;
-                book.BorrowerId = null;
-                book.TimesRerented = 0;
+                bookCopy.IsAvailable = true;
+                bookCopy.BorrowedAt = null;
+                bookCopy.ReturnBy = null;
+                bookCopy.BorrowerId = null;
+                bookCopy.TimesRerented = 0;
 
-                _wrapper.BookCopyRepository.UpdateBookCopy(book);
+                _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
             }
 
             try
             {
                 // Save changes
+                await _wrapper.SaveAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> DeleteBookCopyByRFID(string RFIDValues)
+        {
+            var bookCopies = new List<BookCopy>();
+
+            foreach (var id in RFIDValues.Split(' '))
+            {
+                var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyByRFIDNoRelations(id);
+
+                if (bookCopy != null)
+                {
+                    bookCopies.Add(bookCopy);
+                }
+            }
+
+            if (bookCopies.Count <= 0)
+            {
+                return NotFound();
+            }
+
+            foreach (var bookCopy in bookCopies)
+            {
+                _wrapper.BookCopyRepository.DeleteBookCopy(bookCopy);
+            }
+
+            try
+            {
                 await _wrapper.SaveAsync();
             }
             catch (DbUpdateException e)

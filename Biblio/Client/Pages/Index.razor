@@ -35,9 +35,11 @@
 
         <p>
             Welcome to the central library website! Here you can reserve books from libraries all over Denmark.
-            To start renting books you must create an account and visit your local Library to enable it as your home library.
-            Following that you can reserve book online here, manage your reservation, see your current rented books and contact libraries.
+            <br />
+            To start you must create an account, and visit your local Library to set it as your home library.
+            Following that you can reserve books online here, manage your reservation and see your current borrowed books.
         </p>
+        <img src="/Media/Images/Logo.jpg" />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -55,8 +57,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         username = authState.User.Identity.Name;
 
-        // Get
-        reservations = await Http.GetFromJsonAsync<List<ReservationDTO>>($"api/Reservations/GetAllReservationsByUser?username={ username }");
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            reservations = await Http.GetFromJsonAsync<List<ReservationDTO>>($"api/Reservations/GetAllReservationsByUser?username={ username }");
+        }
     }
 
     private async Task DeleteReservationHandler(int id)

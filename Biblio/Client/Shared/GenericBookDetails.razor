@@ -210,7 +210,7 @@ else
 
         if (isReservedByUser)
         {
-            response = await Http.DeleteAsync($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+            response = await Http.PutAsJsonAsync<ReservationDTO>($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
         }
         else
         {

@@ -16,12 +16,12 @@ namespace Biblio.Shared.Models.DTOs
         public short? Depth { get; set; }
         public short? Width { get; set; }
         public short? Weight { get; set; }
-        public int NumberofPages { get; set; }
+        public short NumberofPages { get; set; }
         public byte[] Image { get; set; }
         public BookProperties.BookFormats Format { get; set; }
         public BookProperties.BookTypes Type { get; set; }
 
-        public ICollection<AuthorDTO> Authors { get; set; }
-        public ICollection<GenreDTO> Genres { get; set; }
+        public List<AuthorDTO> Authors { get; set; }
+        public List<GenreDTO> Genres { get; set; }
     }
 }

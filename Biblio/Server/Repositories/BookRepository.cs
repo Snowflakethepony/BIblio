@@ -31,7 +31,7 @@ namespace Biblio.Server.Repositories
 
         public async Task<Book> GetBookById(int id)
         {
-            return await FindByPrimaryKey(id);
+            return await FindByCondition(b => b.BookId == id).Include(b => b.Authors).Include(b => b.Genres).SingleOrDefaultAsync();
         }
 
         public async Task<Book> GetBookByIdIncludingRelations(int bookId)
@@ -42,6 +42,18 @@ namespace Biblio.Server.Repositories
         public async Task<Book> GetBookByTitle(string title)
         {
             return await FindByCondition(b => b.Title.ToLower().Contains(title.ToLower())).Include(b => b.Authors).Include(b => b.Genres).SingleOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByTitleAndFormat(string title, BookProperties.BookFormats format)
+        {
+            try
+            {
+                return await FindByCondition(b => b.Title.ToLower().Contains(title.ToLower()) && b.Format == format).Include(b => b.Authors).Include(b => b.Genres).ToListAsync();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         public async Task<IEnumerable<Book>> GetBooksByAuthor(int authorId)

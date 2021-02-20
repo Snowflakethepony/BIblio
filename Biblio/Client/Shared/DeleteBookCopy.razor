@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+<h4>DeleteBookCopy</h4>
+<MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnBackHandler.InvokeAsync(null))" Label="Back"></MatButton>
+
+<div>
+    <p>
+        Input the RFID(s) of the books you want to remove from the library. Then click the button to <strong>remove</strong> them.
+        For multiple books use a space between the RFIDs.
+        <br />
+        <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+        <br />
+    </p>
+    <p>
+        <MatButton Disabled="@string.IsNullOrEmpty(RFIDs)" OnClick="@RemoveBookCopyHandler" Raised="true">Remove</MatButton>
+    </p>
+</div>
+
+@code {
+    private string RFIDs = "";
+    private string username = "";
+
+    [Parameter]
+    public EventCallback<bool?> OnBackHandler { get; set; }
+
+    [Parameter]
+    public DialogShower DialogShower { get; set; }
+
+    private async void RemoveBookCopyHandler()
+    {
+        // Call endpoint with list of books to rent.
+        var response = await Http.PutAsync($"api/BookCopies/DeleteBookCopyByRFID?RFIDValues={ RFIDs }", null);
+
+        // Show dialog with results.
+        DialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        if (response.IsSuccessStatusCode)
+        {
+            RFIDs = "";
+        }
+
+        base.StateHasChanged();
+    }
+}

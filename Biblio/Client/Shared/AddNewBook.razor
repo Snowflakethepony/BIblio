@@ -1,0 +1,147 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Text.RegularExpressions
+@using System.IO
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "LibraryAdmin")]
+
+<h4>Add new book type</h4>
+<MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnBackHandler.InvokeAsync(null))" Label="Back"></MatButton>
+
+<div>
+    <p>
+        <MatTextField Required="true" @bind-Value="@newBook.Title" Label="Title" />
+    </p>
+    <p>
+        <MatTextField Required="true" @bind-Value="@newBook.Blurb" Label="Blurb" />
+    </p>
+    <p>
+        <MatDatePicker Required="true" @bind-Value="@newBook.PublishedDate" Label="Published" />
+    </p>
+    <p>
+        <MatTextField Required="true" @bind-Value="@newBook.NumberofPages" TValue="short" Label="NumberofPages" />
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@newBook.Format" TValue="BookProperties.BookFormats" Items="@formatItems" Label="Format"></MatSelectItem>
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@newBook.Type" TValue="BookProperties.BookTypes" Items="@typeItems" Label="Type"></MatSelectItem>
+    </p>
+    <p>
+        <MatSelectItem @bind-Value="@selectedGenre" TValue="string" Items="@genreNames"  Label="Genre"></MatSelectItem>
+    </p>
+    <p>
+        <MatTextField Required="true" @bind-Value="@authorPs" Label="Author Pseudonym" />
+    </p>
+    <p>
+        <MatTextField Required="false" @bind-Value="@newBook.Height" Label="Height" />
+    </p>
+    <p>
+        <MatTextField Required="false" @bind-Value="@newBook.Depth" Label="Depth" />
+    </p>
+    <p>
+        <MatTextField Required="false" @bind-Value="@newBook.Width" Label="Width" />
+    </p>
+    <p>
+        <MatTextField Required="false" @bind-Value="@newBook.Weight" Label="Weight" />
+    </p>
+    <p>
+        <MatFileUpload OnChange="@FilesReady" Label="Drop an image file here or Browse"></MatFileUpload>
+    </p>
+    <p>
+        <MatButton OnClick="@CreateNewBookTypeHandler" Raised="true">Add type</MatButton>
+    </p>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool?> OnBackHandler { get; set; }
+
+    [Parameter]
+    public DialogShower DialogShower { get; set; }
+
+    private BookDTO newBook = new BookDTO();
+    private string username = "";
+    private BookProperties.BookFormats[] formatItems = Enum.GetValues(typeof(BookProperties.BookFormats)).Cast<BookProperties.BookFormats>().ToArray();
+    private BookProperties.BookTypes[] typeItems = Enum.GetValues(typeof(BookProperties.BookTypes)).Cast<BookProperties.BookTypes>().ToArray();
+    private List<GenreDTO> genres = new List<GenreDTO>();
+    private List<string> genreNames = new List<string>();
+    private string selectedGenre;
+    private AuthorDTO author;
+    private string authorPs = "";
+
+    /// <summary>
+    /// Component startup procedure.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        genres = await Http.GetFromJsonAsync<List<GenreDTO>>("api/Genres/GetGenres");
+
+        foreach(var genre in genres)
+        {
+            genreNames.Add(genre.Name);
+        }
+    }
+
+    private async void CreateNewBookTypeHandler()
+    {
+        if (!await GetAuthor())
+        {
+            DialogShower.HandleDialog("Error", "Author not found. Please ensure you typed correctly.");
+
+            return;
+        }
+
+        // Add genre
+        newBook.Genres = new List<GenreDTO>();
+        newBook.Genres.Add(genres.FirstOrDefault(g => g.Name == selectedGenre));
+
+        newBook.Authors = new List<AuthorDTO>();
+        newBook.Authors.Add(author);
+
+        // Call endpoint with list of books to rent.
+        var response = await Http.PostAsJsonAsync<BookDTO>($"api/Books/CreateBook", newBook);
+
+        // Show dialog with results.
+        DialogShower.HandleDialog(response.IsSuccessStatusCode);
+
+        if (response.IsSuccessStatusCode)
+        {
+            newBook = new BookDTO();
+        }
+
+        base.StateHasChanged();
+    }
+
+    private async Task<bool> GetAuthor()
+    {
+        author = await Http.GetFromJsonAsync<AuthorDTO>($"api/Authors/GetAuthorByPseudonym?pseudonym={ authorPs }");
+
+        return author != null ? true : false;
+    }
+
+    private async Task FilesReady(IMatFileUploadEntry[] files)
+    {
+        try
+        {
+            var file = files.FirstOrDefault();
+
+            if (file != null)
+            {
+                return;
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await file.WriteToStreamAsync(ms);
+
+                newBook.Image = ms.ToArray();
+            }
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+    }
+}
