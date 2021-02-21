@@ -164,7 +164,8 @@ else
     private enum DialogTypes
     {
         Reserved,
-        Edit
+        Edit,
+        ReservationDeleted
     }
 
     /// <summary>
@@ -210,20 +211,23 @@ else
 
         if (isReservedByUser)
         {
-            response = await Http.PutAsJsonAsync<ReservationDTO>($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
+            response = await Http.GetAsync($"api/Reservations/DeleteReservationForUserByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }");
+            dialogType = DialogShower.DialogTypes.ReservationDeleted;
         }
         else
         {
             response = await Http.PostAsJsonAsync<BookCopyDTO>($"api/Reservations/CreateReservationByBookCopyId?username={ username }&bookCopyId={ bookCopy.BookCopyId }", null);
+            dialogType = DialogShower.DialogTypes.ReservationMade;
         }
 
         if (response.IsSuccessStatusCode)
         {
             isReservedByUser = !isReservedByUser;
+            ((BookCopyDTO)inputObject).IsAvailable = !((BookCopyDTO)inputObject).IsAvailable;
         }
 
-        HandleDialog(response.IsSuccessStatusCode, DialogTypes.Reserved);
         UpdateUI();
+        dialogShower.HandleDialog(response.IsSuccessStatusCode);
     }
 
     private async void ExtentPeriodHandler(MouseEventArgs e)
@@ -235,8 +239,10 @@ else
         ((BookCopyDTO)inputObject).ReturnBy = newPeriod;
 
         dialogType = DialogShower.DialogTypes.Extent;
-        dialogShower.DialogType = DialogShower.DialogTypes.Extent;
+        UpdateUI();
+
         dialogShower.HandleDialog(response.IsSuccessStatusCode);
+
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
-﻿<div>
+﻿@using System.Text.RegularExpressions
+
+<div>
     <MatDialog @bind-IsOpen="@dialogIsOpen">
         <MatDialogTitle>@title</MatDialogTitle>
         <MatDialogContent>
@@ -19,7 +21,7 @@
     public enum DialogTypes
     {
         ReservationMade,
-        ReservationDel,
+        ReservationDeleted,
         Edit,
         Borrow,
         Home,
@@ -75,14 +77,15 @@
     private void ShowDialog(bool isSuccess)
     {
         // Set "generic" title
-        title = isSuccess ? DialogType.ToString() + " - Successful" : DialogType.ToString() + " - Failed";
+        title = Regex.Replace(DialogType.ToString(), "([a-z])_?([A-Z])", "$1 $2");
+        title += isSuccess ? " - Successful" : " - Failed";
 
         switch (DialogType)
         {
             case DialogTypes.ReservationMade:
                 message = isSuccess ? "Reservation made succesfully" : "Failed to reserve the book. Please try again later.";
                 break;
-            case DialogTypes.ReservationDel:
+            case DialogTypes.ReservationDeleted:
                 message = isSuccess ? "Reservation deleted succesfully" : "Failed to delete the reservation. Please try again later.";
                 break;
             case DialogTypes.Edit:

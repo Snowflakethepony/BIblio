@@ -1,5 +1,25 @@
 ﻿@using Biblio.Shared.Models.DTOs
 
+<style>
+    .demo-mat-card {
+        max-width: 400px;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .demo-mat-card-clean-margin {
+        margin: 0px;
+    }
+
+    .row-item {
+        margin-bottom: 20px;
+        margin-right: 30px;
+    }
+
+</style>
+
 @if (bookCopies == null)
 {
     <p><em>Book copies not found.</em></p>
@@ -12,12 +32,10 @@ else
             <div class="row">
                 @foreach (var bookCopy in bookCopies)
                 {
-
-
-                    <div class="col-md-4" style="margin-bottom:20px;">
+                    <div class="d-flex flex-wrap align-items-md-start row-item" >
                         <MatCard class="demo-mat-card">
                             <MatCardContent>
-                                <MatCardMedia Wide="true" ImageUrl="@GetImageUrl(bookCopy.Book)" ></MatCardMedia>
+                                <MatCardMedia Wide="true" ImageUrl="@GetImageUrl(bookCopy.Book)"></MatCardMedia>
                                 <div class="demo-mat-card-content">
                                     <MatHeadline6 class="demo-mat-card-clean-margin">
                                         @bookCopy.Book.Title
@@ -30,7 +48,8 @@ else
                                                 <br />
                                                 Reborrow available: @(bookCopy.TimesRerented <= 3 ? "Yes" : "No")
                                             </p>
-                                        } else
+                                        }
+                                        else
                                         {
                                             <p>
                                                 Library: @bookCopy.OriginLibrary.Name
@@ -42,7 +61,14 @@ else
                                 </div>
 
                                 <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-                                   @bookCopy.Book.Blurb.Substring(0, bookCopy.Book.Blurb.IndexOf('.', 100) + 1)
+                                    @if (bookCopy.Book.Blurb.Length < 101)
+                                    {
+                                        @bookCopy.Book.Blurb
+                                    }
+                                    else
+                                    {
+                                        @bookCopy.Book.Blurb.Substring(0, bookCopy.Book.Blurb.IndexOf('.', 100) + 1)
+                                    }
                                 </MatBody2>
                             </MatCardContent>
                             <MatCardActions>
@@ -81,13 +107,13 @@ else
                     <td>@context.Book.Title</td>
                     <td>@context.Book.Authors.FirstOrDefault().FullName</td>
                     @if (IsAdminFindPage)
-                    {
+                                {
                         <td>@context.ShelfNumber</td>
-                    }
-                    else
-                    {
+                                }
+                                else
+                                {
                         <td>@context.OriginLibrary.Name</td>
-                    }
+                                }
                     <td>@context.IsAvailable</td>
                     <td>@context.Book.Blurb</td>
                 </MatTableRow>

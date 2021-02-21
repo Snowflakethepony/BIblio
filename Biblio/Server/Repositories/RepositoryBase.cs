@@ -27,7 +27,7 @@ namespace Biblio.Server.Repositories
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
             return this.DbContext.Set<T>()
-                .Where(expression).AsNoTracking();
+                .Where(expression); // .AsNoTracking()
         }
 
         public IQueryable<T> FindBySqlLike(string modelAssembly, string property, string query)

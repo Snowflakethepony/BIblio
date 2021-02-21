@@ -127,24 +127,24 @@ namespace Biblio.Server.Controllers
             return Ok();
         }
 
-        [HttpPut]
+        [HttpGet]
         public async Task<IActionResult> DeleteReservationForUserByBookCopyId(string username, int bookCopyId)
         {
             // Get user
             var user = await _usermanager.FindByNameAsync(username);
 
             // Look for existing reservation.
-            var reservation = await _wrapper.ReservationRepository.GetReservationForUserByBookCipyId(username, bookCopyId);
+            var reservation = await _wrapper.ReservationRepository.GetReservationForUserByBookCipyId(user.Id, bookCopyId);
 
             var bookCopy = await _wrapper.BookCopyRepository.GetBookCopyById(bookCopyId);
 
-            if (reservation == null || bookCopy != null)
+            if (reservation == null || bookCopy == null)
             {
                 return NotFound();
             }
             else
             {
-                bookCopy.IsAvailable = false;
+                bookCopy.IsAvailable = true;
 
                 _wrapper.BookCopyRepository.UpdateBookCopy(bookCopy);
                 _wrapper.ReservationRepository.DeleteReservation(reservation);
