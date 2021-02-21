@@ -9,41 +9,42 @@
 <h3>Manage Home Library</h3>
 Here you set your home library to be of this library you are currently at which is: <strong>@library.Name!</strong>
 <br />
+<br />
 
-@switch (currentState)
-{
-    case State.ChangedHome:
-        <p>Congrazt you have changed your home library to *@library.Name*.</p>
-        break;
-    case State.IsCurrentHome:
-        <p>Yay - This is currently your home library!</p>
-        break;
-    case State.Changing:
-        <div>
+<div>
+    @switch (currentState)
+    {
+        case State.ChangedHome:
+            <p>
+                Congrazt you have changed your home library to *@library.Name*.
+            </p>
+            break;
+        case State.IsCurrentHome:
+            <p>
+                Yay - This is currently your home library!
+            </p>
+            break;
+        case State.Changing:
             <p>
                 <MatTextField @bind-Value="@username" TValue="string" Label="Username" Required="true" OnKeyDown="@OnKeyDownHandler" />
             </p>
             <p>
                 <MatButton OnClick="@SearchUser" Raised="true">Search for user</MatButton>
-            </p>
-        </div>
-        <br />
-        @if (appUser != null)
-        {
-            <p>Found user with name: @appUser.FullName</p>
-        }
-        <br />
-        <div>
+             </p>
+            @if (appUser != null)
+            {
+                <p>Found user with name: @appUser.FullName</p>
+            }
             <p>
                 <MatButton Disabled="@(appUser == null)" OnClick="@UpdateHomeLibray" Raised="true">Set @library.Name as home library</MatButton>
             </p>
-        </div>
-        break;
-    default:
-        break;
-}
+            break;
+        default:
+            break;
+    }
+    <DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Home" />
+</div>
 
-<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Home" />
 
 @code {
     private string _username = "";

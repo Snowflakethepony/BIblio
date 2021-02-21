@@ -5,13 +5,17 @@
 @attribute [Authorize(Roles = "LibraryAdmin")]
 
 
-<h3>Find Books</h3>
+<h3>Find book locations</h3>
+<br />
 
-<p>
-    <MatSelectItem @bind-Value="@queryType" Items="@queryTypes"></MatSelectItem>
-    <MatTextField @bind-Value="@query" Label="Title"></MatTextField>
-    <MatButton OnClick="@SearchMovie" Raised="true">Search</MatButton>
-</p>
+<div >
+    <p>
+        <MatSelectItem @bind-Value="@queryType" Items="@queryTypes"></MatSelectItem> <span style="padding-right:10px;" />
+        <MatTextField @bind-Value="@query" Label="Title"></MatTextField> <span style="padding-right:10px;" />
+        <MatButton OnClick="@SearchMovie" Raised="true">Search</MatButton>
+    </p>
+</div>
+<hr />
 
 @if (bookCopies.Count <= 0)
 {

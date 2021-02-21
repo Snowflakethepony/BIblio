@@ -6,6 +6,7 @@
 
 
 <h3>Borrow Book(s)</h3>
+<br />
 
 <div>
     <p>
@@ -14,21 +15,23 @@
     <p>
         <MatButton OnClick="@SearchUser" Raised="true">Search for user</MatButton>
     </p>
+    @if (appUser != null)
+    {
+        <p>Found user with name: @appUser.FullName</p>
+    }
+    <p>
+        Input the RFID(s) of the books you want to borrow then click the button below to see the books in a list below. 
+        <br />
+        If the books are correct click the button again to <strong>borrow</strong> them.
+    </p>
+    <p>
+        <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+    </p>
+    <p>
+        <MatButton Disabled="@(appUser == null)" OnClick="@BorrowHandler" Raised="true">@BorrowHandlerBtnText</MatButton>
+    </p>
+
 </div>
-<br />
-@if (appUser != null)
-{
-    <p>Found user with name: @appUser.FullName</p>
-}
-<br />
-<p>
-    Input the RFID(s) of the books you want to borrow then click the button below to see the books in a list below. If the books are correct click the button again to <strong>borrow</strong> them.
-    <br />
-    <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
-    <br />
-    <MatButton Disabled="@(appUser == null)" OnClick="@BorrowHandler" Raised="true">@BorrowHandlerBtnText</MatButton>
-</p>
-<br />
 <br />
 
 @if (bookCopies.Count > 0)

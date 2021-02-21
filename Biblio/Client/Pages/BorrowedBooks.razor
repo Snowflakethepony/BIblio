@@ -28,7 +28,7 @@
         <MatTable Items="borrowedBookHistories" class="mat-elevation-z5" AllowSelection="false" SortBy="">
             <MatTableHeader>
                 <th>Title</th>
-                <th>Borrowed at</th>
+                <th>Borrowed at</th>1
                 <th>Returned at</th>
             </MatTableHeader>
             <MatTableRow>
@@ -68,7 +68,7 @@
 
         // Get
         borrowedBooks = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesForUser?username={ authState.User.Identity.Name }");
-        borrowedBookHistories = await Http.GetFromJsonAsync<List<BorrowedBookHistoryDTO>>($"api/BorrowedBookHistories/GetAllRentedBookHistoriesForUser?username={ authState.User.Identity.Name }");
+        borrowedBookHistories = await Http.GetFromJsonAsync<List<BorrowedBookHistoryDTO>>($"api/BorrowedBookHistories/GetAllBorrowedBookHistoriesForUser?username={ authState.User.Identity.Name }");
     }
 
     private void SetState(bool shouldShowHistory)

@@ -8,20 +8,22 @@
 
 
 <h3>Checkin Book(s)</h3>
-
-<br />
-<p>
-    Input the RFID(s) of the books you want to checkin then click the button to <strong>check</strong> them in.
-    For multiple books use a space between the RFIDs.
-    <br />
-    <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
-    <br />
-    <MatButton OnClick="@CheckinHandler" Raised="true">Checin</MatButton>
-</p>
-<br />
 <br />
 
-<DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Checkin" />
+<div>
+    <p>
+        Input the RFID(s) of the books you want to checkin then click the button to <strong>check</strong> them in.
+        <br />
+        For multiple books use a space between the RFIDs.
+    </p>
+    <p>
+        <MatTextField @bind-Value="@RFIDs" Label="RFID(s)" />
+    </p>
+    <p>
+        <MatButton OnClick="@CheckinHandler" Raised="true">Checin</MatButton>
+    </p>
+    <DialogShower @ref="@dialogShower" DialogType="DialogShower.DialogTypes.Checkin" />
+</div>
 
 @code {
     private string RFIDs = "";

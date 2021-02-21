@@ -7,7 +7,9 @@
 @attribute [Authorize(Roles = "LibraryAdmin")]
 
 <h3>Add administrators</h3>
-Here you give other librarians accounts the admin role over the library which is: <strong>@librayName!</strong>
+<p>
+    Here you give other librarians accounts the admin role over the library which is: <strong>@librayName!</strong>
+</p>
 <br />
 
 <div>
@@ -17,20 +19,16 @@ Here you give other librarians accounts the admin role over the library which is
     <p>
         <MatButton OnClick="@SearchUserHandler" Raised="true">Search for user</MatButton>
     </p>
-</div>
-<br />
-@if (appUser != null)
-{
-    <p>Found user with name: @appUser.FullName</p>
-}
-<br />
-<div>
+    @if (appUser != null)
+    {
+        <p>Found user with name: @appUser.FullName</p>
+    }
     <p>
         <MatButton Disabled="@(appUser == null)" OnClick="@GiveAdminRoleHandler" Raised="true">Give admin role</MatButton>
     </p>
+    <DialogShower @ref="dialogShower" DialogType="DialogShower.DialogTypes.AddAdmin" />
 </div>
 
-<DialogShower @ref="dialogShower" DialogType="DialogShower.DialogTypes.AddAdmin" />
 
 @code {
     private string username = "";

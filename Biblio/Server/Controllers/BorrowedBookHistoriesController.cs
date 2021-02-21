@@ -29,7 +29,7 @@ namespace Biblio.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BorrowedBookHistoryDTO>>> GetAllRentedBookHistoriesForUser(string username)
+        public async Task<ActionResult<List<BorrowedBookHistoryDTO>>> GetAllBorrowedBookHistoriesForUser(string username)
         {
             var user = await _usermanager.FindByNameAsync(username);
             return Ok(_mapper.Map<List<BorrowedBookHistoryDTO>>(await _wrapper.BorrowedBookHistoryRepository.GetAllRentedBookHistoriesForUser(user.Id)));
