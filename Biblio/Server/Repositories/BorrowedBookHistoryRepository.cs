@@ -26,7 +26,7 @@ namespace Biblio.Server.Repositories
 
         public async Task<IEnumerable<BorrowedBookHistory>> GetAllRentedBookHistoriesForUser(string userId)
         {
-            return await FindByCondition(rbh => rbh.BorrowerId == userId).Include(rbh => rbh.Book).Include(rbh => rbh.Borrower).ToListAsync();
+            return await FindByCondition(rbh => rbh.BorrowerId == userId).Include(rbh => rbh.Book).ThenInclude(bc => bc.Book).Include(rbh => rbh.Borrower).ToListAsync();
         }
 
         public async Task<IEnumerable<BorrowedBookHistory>> GetAllRentedBookHistoriesForUserByBookId(string userId, int bookId)

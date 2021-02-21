@@ -5,17 +5,58 @@
 @attribute [Authorize]
 
 <h3>Borrowed Books</h3>
+
 <p>
-    Here you can see your current borrowed books. You can extent the borrowing period if it close to the return date. You can only extent a period up to 3 times.
-    To extent the period click "Details" on the borrowed wanted to do so on. 
+    Here you can see your current borrowed books, and the ones you have borrowed. You can extent the borrowing period if it close to the return date (2 days).
+    <br />
+    You can only extent a period up to 3 times. To extent the period click "Details" on the borrowed wanted to do so on.
+    <br />
+    Switch between current and history using the buttons below.
 </p>
+<br />
 
 <div>
-    <GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" ViewState="@SharedProperties.ViewState.ShowList" IsBorrowedBooks="true" inputObjectList="@borrowedBooks" />
+    <MatButton OnClick="@(() => SetState(false))" Raised="true">See current</MatButton>
+    <MatButton OnClick="@(() => SetState(true))" Raised="true">See history</MatButton>
 </div>
+<hr />
+
+@switch (showHistory)
+{
+    case true:
+        <p><strong>History</strong></p>
+        <MatTable Items="borrowedBookHistories" class="mat-elevation-z5" AllowSelection="false" SortBy="">
+            <MatTableHeader>
+                <th>Title</th>
+                <th>Borrowed at</th>
+                <th>Returned at</th>
+            </MatTableHeader>
+            <MatTableRow>
+                <td>@context.Book.Book.Title</td>
+                <td>@context.BorrowedAt</td>
+                <td>@context.ReturnedAt</td>
+            </MatTableRow>
+        </MatTable>
+        break;
+    case false:
+        if (borrowedBooks.Count <= 0)
+        {
+            <p>You have no borrowed books currently.</p>
+        }
+        else
+        {
+            <p><strong>Current</strong></p>
+            <div>
+                <GenericBookList BookType="@SharedProperties.BookTypes.Copy" DisplayType="@SharedProperties.DisplayTypes.Card" ViewState="@SharedProperties.ViewState.ShowList" IsBorrowedBooks="true" InputObjectList="@borrowedBooks" />
+            </div>
+        }
+        break;
+}
 
 @code {
     private List<BookCopyDTO> borrowedBooks = new List<BookCopyDTO>();
+    private List<BorrowedBookHistoryDTO> borrowedBookHistories = new List<BorrowedBookHistoryDTO>();
+    private bool showHistory = false;
 
     /// <summary>
     /// Component startup procedure.
@@ -27,5 +68,12 @@
 
         // Get
         borrowedBooks = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/GetAllBookCopiesForUser?username={ authState.User.Identity.Name }");
+        borrowedBookHistories = await Http.GetFromJsonAsync<List<BorrowedBookHistoryDTO>>($"api/BorrowedBookHistories/GetAllRentedBookHistoriesForUser?username={ authState.User.Identity.Name }");
+    }
+
+    private void SetState(bool shouldShowHistory)
+    {
+        showHistory = shouldShowHistory;
+        base.StateHasChanged();
     }
 }

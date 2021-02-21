@@ -3,6 +3,7 @@
 <style>
     .demo-mat-card {
         max-width: 400px;
+        min-width: 400px;
     }
 
     .demo-mat-card-content {
@@ -96,10 +97,8 @@ else
                     {
                         <th>Shelf Number</th>
                     }
-                    else
-                    {
                         <th>Library</th>
-                    }
+
                     <th>Available</th>
                     <th>Blurb</th>
                 </MatTableHeader>
@@ -107,13 +106,10 @@ else
                     <td>@context.Book.Title</td>
                     <td>@context.Book.Authors.FirstOrDefault().FullName</td>
                     @if (IsAdminFindPage)
-                                {
-                        <td>@context.ShelfNumber</td>
-                                }
-                                else
-                                {
-                        <td>@context.OriginLibrary.Name</td>
-                                }
+                            {
+                            <td>@context.ShelfNumber</td>
+                  }
+                     <td>@context.OriginLibrary.Name</td>
                     <td>@context.IsAvailable</td>
                     <td>@context.Book.Blurb</td>
                 </MatTableRow>

@@ -27,7 +27,7 @@ namespace Biblio.Server.Repositories
 
         public async Task<List<Application>> GetAllOpenApplications()
         {
-            return await FindAll().ToListAsync();
+            return await FindByCondition(a => a.IsHandled == false).ToListAsync();
         }
 
         public async Task<Application> GetApplicationById(int id)

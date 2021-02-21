@@ -12,14 +12,12 @@
         <MatTableHeader>
             <th>Reserved book</th>
             <th>From library</th>
-            <th>Is sent</th>
             <th>Expiration date</th>
             <th>Actions</th>
         </MatTableHeader>
         <MatTableRow>
             <td>@context.ReservedCopy.Book.Title</td>
             <td>@context.Library.Name</td>
-            <td>@context.IsSent</td>
             <td>@(context.ExpirationDate == null ? "No expiration set" : context.ExpirationDate)</td>
             <td><MatButton Raised="true" Label="Delete Reservation" OnClick="@(() => DeleteReservationHandler(context.ReservationId))" /></td>
         </MatTableRow>

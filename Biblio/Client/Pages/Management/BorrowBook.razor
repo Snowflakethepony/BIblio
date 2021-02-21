@@ -33,7 +33,7 @@
 
 @if (bookCopies.Count > 0)
 {
-    <GenericBookList DisplayType="@SharedProperties.DisplayTypes.Table" ViewState="@SharedProperties.ViewState.ShowList" BookType="@SharedProperties.BookTypes.Copy" inputObjectList="@bookCopies" />
+    <GenericBookList DisplayType="@SharedProperties.DisplayTypes.Table" ViewState="@SharedProperties.ViewState.ShowList" BookType="@SharedProperties.BookTypes.Copy" InputObjectList="@bookCopies" />
 }
 
 <DialogShower @ref="@dialogShower" DialogType="@dialogType" />

@@ -3,6 +3,7 @@ using Biblio.Server.Interfaces;
 using Biblio.Shared.Models;
 using Biblio.Shared.Models.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,17 +19,20 @@ namespace Biblio.Server.Controllers
     {
         private readonly IRepositoryWrapper _wrapper;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _usermanager;
 
-        public BorrowedBookHistoriesController(IRepositoryWrapper wrapper, IMapper mapper)
+        public BorrowedBookHistoriesController(IRepositoryWrapper wrapper, IMapper mapper, UserManager<AppUser> usermanager)
         {
             this._wrapper = wrapper;
             this._mapper = mapper;
+            this._usermanager = usermanager;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<BorrowedBookHistoryDTO>>> GetAllRentedBookHistoriesForUser(string userId)
+        public async Task<ActionResult<List<BorrowedBookHistoryDTO>>> GetAllRentedBookHistoriesForUser(string username)
         {
-            return Ok(_mapper.Map<List<BorrowedBookHistoryDTO>>(await _wrapper.BorrowedBookHistoryRepository.GetAllRentedBookHistoriesForUser(userId)));
+            var user = await _usermanager.FindByNameAsync(username);
+            return Ok(_mapper.Map<List<BorrowedBookHistoryDTO>>(await _wrapper.BorrowedBookHistoryRepository.GetAllRentedBookHistoriesForUser(user.Id)));
         }
 
         [HttpGet]
