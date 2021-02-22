@@ -2,6 +2,8 @@
 @using Biblio.Shared.Models
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
 @inject HttpClient Http
 @inject IHttpClientFactory ClientFactory
 @inject NavigationManager NavigationManager
@@ -24,57 +26,61 @@
 }
 else
 {
-    <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnbackClick.InvokeAsync(inputObject))" Label="Back"></MatButton>
+    if (doneLoadingElements)
+    {
+        <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnbackClick.InvokeAsync(inputObject))" Label="Back"></MatButton>
 
-    <div class="movieDetail">
-        @switch (bookType)
-        {
-            case SharedProperties.BookTypes.Book:
-                <Biblio.Client.Shared.Markup.BookDetailsMarkup book="@((BookDTO)inputObject)" />
-                break;
-            case SharedProperties.BookTypes.Copy:
-                <Biblio.Client.Shared.Markup.BookCopyDetailsMarkup bookCopy="@((BookCopyDTO)inputObject)" />
-                break;
-            default:
-                break;
-        }
-        <hr />
-        <div class="movie-actions">
-            <AuthorizeView>
-                @*TODO: Should make this into a variable that is set doing startup of the component based on input object. *@
-                @if (bookType == SharedProperties.BookTypes.Copy)
-                {
-                    if (isBorrwedByUser)
+        <div class="movieDetail">
+            @switch (bookType)
+            {
+                case SharedProperties.BookTypes.Book:
+                    <Biblio.Client.Shared.Markup.BookDetailsMarkup book="@((BookDTO)inputObject)" />
+                    break;
+                case SharedProperties.BookTypes.Copy:
+                    <Biblio.Client.Shared.Markup.BookCopyDetailsMarkup bookCopy="@((BookCopyDTO)inputObject)" />
+                    break;
+                default:
+                    break;
+            }
+            <hr />
+            <div class="movie-actions">
+                <AuthorizeView>
+                    @*TODO: Should make this into a variable that is set doing startup of the component based on input object. *@
+                    @if (bookType == SharedProperties.BookTypes.Copy)
                     {
-                        <MatButton Disabled="@(!CanExtent)" Raised="true" OnClick="@ExtentPeriodHandler">@ExtentBtnText</MatButton>
-                    } else
-                    {
-                        <MatButton Disabled="@reserveButtonBool" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                        if (isBorrwedByUser)
+                        {
+                            <MatButton Disabled="@(!CanExtent)" Raised="true" OnClick="@ExtentPeriodHandler">@ExtentBtnText</MatButton>
+                        }
+                        else
+                        {
+                            <MatButton Disabled="@reserveButtonBool" Raised="true" OnClick="@ReserveBookHandler">@ReserveBookHandlerBtnText</MatButton>
+                        }
                     }
-                }
-            </AuthorizeView>
-            <AuthorizeView Roles="SiteAdministrator, LibraryAdmin">
-                <MatButton Raised="true" OnClick="@EditListingHandler">Edit listing</MatButton>
-            </AuthorizeView>
-        </div>
+                </AuthorizeView>
+                <AuthorizeView Roles="SiteAdministrator, LibraryAdmin">
+                    <MatButton Raised="true" OnClick="@EditListingHandler">Edit listing</MatButton>
+                </AuthorizeView>
+            </div>
 
-        <br />
-        <hr />
-        <br />
-        <div>
-            <DialogShower @ref="@dialogShower" DialogType="@dialogType" />
-            <MatDialog @bind-IsOpen="@dialogIsOpen">
-                <MatDialogTitle>@title</MatDialogTitle>
-                <MatDialogContent>
-                    <p>@message</p>
+            <br />
+            <hr />
+            <br />
+            <div>
+                <DialogShower @ref="@dialogShower" DialogType="@dialogType" />
+                <MatDialog @bind-IsOpen="@dialogIsOpen">
+                    <MatDialogTitle>@title</MatDialogTitle>
+                    <MatDialogContent>
+                        <p>@message</p>
 
-                </MatDialogContent>
-                <MatDialogActions>
-                    <MatButton OnClick="@HideDialog">OK</MatButton>
-                </MatDialogActions>
-            </MatDialog>
+                    </MatDialogContent>
+                    <MatDialogActions>
+                        <MatButton OnClick="@HideDialog">OK</MatButton>
+                    </MatDialogActions>
+                </MatDialog>
+            </div>
         </div>
-    </div>
+    }
 }
 
 
@@ -101,6 +107,23 @@ else
     private BookCopyDTO bookCopy = null;
     private DialogShower dialogShower;
     private DialogShower.DialogTypes dialogType;
+    private bool reserveButtonBindingBool = false;
+    private bool doneLoadingElements = false;
+
+    private bool reserveBool
+    {
+        get
+        {
+            if (isReservedByUser)
+                return false;
+
+            return reserveButtonBindingBool;
+        }
+        set
+        {
+
+        }
+    }
 
     private string ReserveBookHandlerBtnText
     {
@@ -152,6 +175,11 @@ else
             if (isReservedByUser)
                 return false;
 
+            if (bookCopy == null)
+            {
+                return false;
+            }
+
             // Set button active based on its availability.
             return bookCopy.IsAvailable ? false : true;
         }
@@ -168,6 +196,13 @@ else
         ReservationDeleted
     }
 
+    //protected override async Task OnParametersSetAsync()
+    //{
+    //    await Task.Run(() => {
+    //        bookCopy = (BookCopyDTO)inputObject;
+    //    });
+    //}
+
     /// <summary>
     /// Component startup procedure.
     /// </summary>
@@ -177,6 +212,15 @@ else
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         username = authState.User.Identity.Name;
 
+        await Startuplogic();
+
+
+        doneLoadingElements = true;
+        base.StateHasChanged();
+    }
+
+    private async Task Startuplogic()
+    {
         switch (bookType)
         {
             case SharedProperties.BookTypes.Book:
@@ -184,6 +228,11 @@ else
                 break;
             case SharedProperties.BookTypes.Copy:
                 bookCopy = (BookCopyDTO)inputObject;
+
+                reserveButtonBindingBool = bookCopy.IsAvailable ? false : true;
+
+                //var jsonString = JsonSerializer.Serialize(bookCopy);
+                //Console.WriteLine(jsonString);
 
                 if (bookCopy.BorrowerId != null)
                 {

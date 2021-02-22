@@ -97,6 +97,7 @@
 
     private void EvalCopies()
     {
+        var t = RFIDs.Split(' ').Count();
         if (bookCopies.Count < RFIDs.Split(' ').Count())
         {
             dialogType = DialogShower.DialogTypes.UnAvailable;
