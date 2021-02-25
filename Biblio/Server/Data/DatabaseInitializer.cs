@@ -116,6 +116,9 @@ namespace Biblio.Server.Data
                 {
                     // Assign role to user
                     await userManager.AddToRoleAsync(adminUser, "SiteAdministrator");
+                    await userManager.AddToRoleAsync(adminUser, "AppUser");
+                    await userManager.AddToRoleAsync(adminUser, "LibraryAdmin");
+                    await userManager.AddToRoleAsync(adminUser, "SvenstrupLibrary");
                 }
             }
         }
