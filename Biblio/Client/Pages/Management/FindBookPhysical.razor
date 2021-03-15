@@ -8,7 +8,7 @@
 <h3>Find book locations</h3>
 <br />
 
-<div >
+<div>
     <p>
         <MatSelectItem @bind-Value="@queryType" Items="@queryTypes"></MatSelectItem> <span style="padding-right:10px;" />
         <MatTextField @bind-Value="@query" Label="Title"></MatTextField> <span style="padding-right:10px;" />
@@ -19,7 +19,14 @@
 
 @if (bookCopies.Count <= 0)
 {
-    <p>Please search for a book to display a list!</p>
+    if (hasSearched)
+    {
+        <p>No books found!</p>
+    }
+    else
+    {
+        <p>Please search for a book to display a list!</p>
+    }
 }
 else
 {
@@ -32,9 +39,10 @@ else
     private string query = "";
     private bool showDetails = false;
     private string queryType = "Title";
+    private bool hasSearched = false;
 
     private string[] queryTypes = new[]
-    {
+{
         "Title",
         "Genre",
         "Author"
@@ -45,6 +53,7 @@ else
         // Get books
         bookCopies = await Http.GetFromJsonAsync<List<BookCopyDTO>>($"api/BookCopies/FindBookCopiesByQuery?type={ queryType }&queryText={ query }");
         bookCopies = bookCopies.Where(b => b.IsAvailable == true).ToList();
+        hasSearched = true;
         base.StateHasChanged();
     }
 }
