@@ -51,14 +51,8 @@ Here you set your home library to be of this library you are currently at which 
     private string username = "";
     private ApplicationUserDTO appUser = null;
     private LibraryDTOMinusRelations library = new LibraryDTOMinusRelations();
-    private bool hasChanged = false;
     private DialogShower dialogShower;
     private State currentState = State.Changing;
-
-    private void ValueChangeHandler()
-    {
-
-    }
 
     private enum State
     {
@@ -121,6 +115,10 @@ Here you set your home library to be of this library you are currently at which 
 
         // Show dialog and set component state
         dialogShower.HandleDialog(response.IsSuccessStatusCode);
-        hasChanged = response.IsSuccessStatusCode;
+
+        if (response.IsSuccessStatusCode)
+        {
+            currentState = State.ChangedHome;
+        }
     }
 }
