@@ -4,7 +4,7 @@
 @using System.IO
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@attribute [Authorize(Roles = "LibraryAdmin")]
+@attribute [Authorize(Roles = "Librarian")]
 
 <h4>Add book copy from book type</h4>
 <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnBackHandler.InvokeAsync(null))" Label="Back"></MatButton>
@@ -86,7 +86,7 @@
         foreach (var claim in authState.User.Claims)
         {
             // Check if claim is the specific library role
-            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            if (claim.Value.ToUpper().Contains("LIBRARY"))
             {
                 // Set library name as role name and libray name are the same just with/ without spacing.
                 librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");

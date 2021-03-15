@@ -19,8 +19,10 @@ namespace Biblio.Server.Data
             {
                 new Author()
                 {
+                     
                      Firstname = "Stephen",
                      Lastname = "King",
+                     FullName = "Stephen King",
                      Pseudonym = "Stephen King",
                      DOB = DateTime.Parse("21-09-1947")
                 }
@@ -44,6 +46,7 @@ namespace Biblio.Server.Data
             {
                 new Book()
                 {
+                     
                     Authors = new List<Author>()
                     {
                         authors.FirstOrDefault(a => a.FullName == "Stephen King")
@@ -72,7 +75,7 @@ namespace Biblio.Server.Data
                 new Library()
                 {
                     City = "Svenstrup",
-                    Name = "Svenstrup Bibliotek",
+                    Name = "Svenstrup Library",
                     PostalCode = "9230",
                     AddressLine = "Godthaebsvej 10",
                     PhoneNumber = "88888888",
@@ -81,8 +84,11 @@ namespace Biblio.Server.Data
             };
 
             context.Genres.AddRange(genres);
+            await context.SaveChangesAsync();
             context.Authors.AddRange(authors);
+            await context.SaveChangesAsync();
             context.Books.AddRange(books);
+            await context.SaveChangesAsync();
             context.Libraries.AddRange(libraries);
             await context.SaveChangesAsync();
 

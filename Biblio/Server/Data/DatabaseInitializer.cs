@@ -80,7 +80,7 @@ namespace Biblio.Server.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
 
             // Roles
-            string[] roleNames = { "SiteAdministrator", "AppUser", "LibraryAdmin", "SvenstrupLibrary" };
+            string[] roleNames = { "SiteAdministrator", "AppUser", "Librarian", "SvenstrupLibrary" };
             //IdentityResult roleResult;
 
             // Loop through each initial role and create it.
@@ -117,7 +117,7 @@ namespace Biblio.Server.Data
                     // Assign role to user
                     await userManager.AddToRoleAsync(adminUser, "SiteAdministrator");
                     await userManager.AddToRoleAsync(adminUser, "AppUser");
-                    await userManager.AddToRoleAsync(adminUser, "LibraryAdmin");
+                    await userManager.AddToRoleAsync(adminUser, "Librarian");
                     await userManager.AddToRoleAsync(adminUser, "SvenstrupLibrary");
                 }
             }

@@ -4,7 +4,7 @@
 @using System.IO
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@attribute [Authorize(Roles = "LibraryAdmin")]
+@attribute [Authorize(Roles = "Librarian")]
 
 <h4>Add new book type</h4>
 <MatButton Icon="@MatIconNames.Backspace" OnClick="@(() => OnBackHandler.InvokeAsync(null))" Label="Back"></MatButton>

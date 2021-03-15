@@ -4,7 +4,7 @@
 @using System.Text.RegularExpressions
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@attribute [Authorize(Roles = "LibraryAdmin")]
+@attribute [Authorize(Roles = "Librarian")]
 
 <h3>Manage Home Library</h3>
 Here you set your home library to be of this library you are currently at which is: <strong>@library.Name!</strong>
@@ -78,8 +78,9 @@ Here you set your home library to be of this library you are currently at which 
 
         foreach (var claim in authState.User.Claims)
         {
+            Console.WriteLine(claim);
             // Check if claim is the specific library role
-            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            if (claim.Value.ToUpper().Contains("LIBRARY"))
             {
                 // Set library name as role name and libray name are the same just with/ without spacing.
                 librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");

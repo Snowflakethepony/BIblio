@@ -97,7 +97,7 @@ namespace Biblio.Server.Controllers
 
             string[] roles =
             {
-                "LibraryAdmin",
+                "Librarian",
                 libraryName
             };
 

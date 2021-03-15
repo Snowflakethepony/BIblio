@@ -4,7 +4,7 @@
 @using System.Text.RegularExpressions
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@attribute [Authorize(Roles = "LibraryAdmin")]
+@attribute [Authorize(Roles = "Librarian")]
 
 <h3>ManageBooks</h3>
 <p>Here you can add new books for the library you are assosiated with. You can also access a page where you can remove any book copy from the library.</p>
@@ -68,7 +68,7 @@
         foreach (var claim in authState.User.Claims)
         {
             // Check if claim is the specific library role
-            if (claim.Value.ToUpper().Contains("BIBLIOTEK"))
+            if (claim.Value.ToUpper().Contains("LIBRARY"))
             {
                 // Set library name as role name and libray name are the same just with/ without spacing.
                 librayName = Regex.Replace(claim.Value, "([a-z])([A-Z])", "$1 $2");
