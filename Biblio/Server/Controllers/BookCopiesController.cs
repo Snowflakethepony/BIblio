@@ -64,21 +64,24 @@ namespace Biblio.Server.Controllers
         {
             IEnumerable<BookCopy> bookCopies = new List<BookCopy>();
 
-            if (type == "Author")
+            if (!string.IsNullOrEmpty(queryText))
             {
-                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByAuthor(queryText);
-            }
-            else if (type == "Title")
-            {
-                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByBookTitle(queryText);
-            }
-            else if (type == "Genre")
-            {
-                bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByGenre(queryText);
-            }
-            else if (type == "RFID")
-            {
-                bookCopies.Append(await _wrapper.BookCopyRepository.GetBookCopyByRFID(queryText));
+                if (type == "Author")
+                {
+                    bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByAuthor(queryText);
+                }
+                else if (type == "Title")
+                {
+                    bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByBookTitle(queryText);
+                }
+                else if (type == "Genre")
+                {
+                    bookCopies = await _wrapper.BookCopyRepository.GetAllBookCopiesByGenre(queryText);
+                }
+                else if (type == "RFID")
+                {
+                    bookCopies.Append(await _wrapper.BookCopyRepository.GetBookCopyByRFID(queryText));
+                }
             }
 
             return Ok(_mapper.Map<List<BookCopyDTO>>(bookCopies));
